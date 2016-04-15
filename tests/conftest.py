@@ -36,7 +36,8 @@ def pytest_configure():
             'BUCKET': 'some-bucket',
             'ACCESS_KEY': 'AAAAAAAAAAAAAAAAAAAA',
             'SECRET_KEY': 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC',
-        }
+        },
+        ROOT_URLCONF='tests.urls'
     )
 
     try:
