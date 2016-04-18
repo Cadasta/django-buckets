@@ -17,7 +17,7 @@ class S3File(object):
 
     def _set_file(self, file):
         self._file = file
-        self.commited = False
+        self.committed = False
 
     def _del_file(self):
         self.storage.delete(self.url)
@@ -33,18 +33,29 @@ class S3File(object):
         return self._file
 
     def save(self):
-        if not self.commited:
+        if not self.committed:
             name = os.path.join(self.field.upload_to,
                                 os.path.basename(self._file.name))
-            self.storage.save(name, self._file)
-            self.commited = True
+            self.url = self.storage.save(name, self._file)
+            self.committed = True
+
+        return self.url
 
     def delete(self):
         self._del_file()
 
 
-class S3FileField(models.URLField):
+class S3FileDescriptor(object):
+    def __init__(self, field):
+        self.field = field
+
+    def __set__(self, instance, value):
+        instance.__dict__[self.field.name] = S3File(value, self.field)
+
+
+class S3FileField(models.Field):
     attr_class = S3File
+    descriptor_class = S3FileDescriptor
 
     def __init__(self, upload_to='', storage=None, *args, **kwargs):
         self.storage = storage or default_storage
@@ -52,6 +63,13 @@ class S3FileField(models.URLField):
 
         kwargs['max_length'] = kwargs.get('max_length', 200)
         super(S3FileField, self).__init__(*args, **kwargs)
+
+    def get_internal_type(self):
+        return 'URLField'
+
+    def contribute_to_class(self, cls, name, **kwargs):
+        super(S3FileField, self).contribute_to_class(cls, name, **kwargs)
+        setattr(cls, self.name, self.descriptor_class(self))
 
     def deconstruct(self):
         name, path, args, kwargs = super(S3FileField, self).deconstruct()
@@ -75,3 +93,12 @@ class S3FileField(models.URLField):
             return value
 
         return S3File(value, self)
+
+    def get_prep_value(self, value):
+        return value.url
+
+    def pre_save(self, model_instance, add):
+        file = getattr(model_instance, self.name)
+        file.save()
+
+        return file.url

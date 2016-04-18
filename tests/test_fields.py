@@ -1,15 +1,17 @@
 import os
 
 from django.conf import settings
+from django.db import models
+
 from buckets.fields import S3File, S3FileField
 from .mocks import FakeS3Storage, create_file, make_dirs  # noqa
 
 
-# #############################################################################
-#
+#############################################################################
+
 # S3File
-#
-# #############################################################################
+
+#############################################################################
 
 def test_init():
     field = S3FileField(storage=FakeS3Storage)
@@ -40,10 +42,11 @@ def test_set_file_and_save(make_dirs):   # noqa
     field = S3FileField(upload_to='uploads', storage=FakeS3Storage())
     s3_file = S3File('/media/uploads/text.txt', field)
     s3_file.file = create_file()
-    assert s3_file.commited is False
-    s3_file.save()
+    assert s3_file.committed is False
+    url = s3_file.save()
 
-    assert s3_file.commited is True
+    assert url == '/media/uploads/text.txt'
+    assert s3_file.committed is True
     assert os.path.isfile(os.path.join(os.getcwd(),
                                        'tests/files/uploads/text.txt'))
 
@@ -125,3 +128,28 @@ def test_to_python_with_url():
     python_obj = field.to_python('https://example.com/test.text')
     assert isinstance(python_obj, S3File)
     assert python_obj.url == 'https://example.com/test.text'
+
+
+def test_get_prep_value():
+    field = S3FileField()
+    s3_file = S3File('https://example.com/test.text', field)
+
+    url = field.get_prep_value(s3_file)
+    assert url == 'https://example.com/test.text'
+
+
+class FileModel(models.Model):
+    s3_file = S3FileField()
+
+    class Meta:
+        app_label = 'core'
+
+
+def test_pre_save():
+    model_instance = FileModel(
+        s3_file='http://example.com'
+    )
+    field = S3FileField(name='s3_file')
+    url = field.pre_save(model_instance, False)
+
+    assert url == 'http://example.com'
