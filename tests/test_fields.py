@@ -51,7 +51,7 @@ def test_set_file_and_save(make_dirs):   # noqa
                                        'tests/files/uploads/text.txt'))
 
 
-def test_get_file(make_dirs):  # noqa
+def test_delete_file(make_dirs):  # noqa
     file = create_file()
     with open(os.path.join(settings.MEDIA_ROOT,
               'uploads', 'text.txt'), 'wb') as dest_file:
@@ -136,6 +136,11 @@ def test_get_prep_value():
 
     url = field.get_prep_value(s3_file)
     assert url == 'https://example.com/test.text'
+
+
+def test_get_internal_type():
+    field = S3FileField()
+    assert field.get_internal_type() == 'URLField'
 
 
 class FileModel(models.Model):
