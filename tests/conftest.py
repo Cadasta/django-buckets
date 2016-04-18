@@ -1,4 +1,10 @@
+
+
+# os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
 def pytest_configure():
+    import os
     from django.conf import settings
 
     settings.configure(
@@ -37,7 +43,9 @@ def pytest_configure():
             'ACCESS_KEY': 'AAAAAAAAAAAAAAAAAAAA',
             'SECRET_KEY': 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC',
         },
-        ROOT_URLCONF='tests.urls'
+        ROOT_URLCONF='tests.urls',
+        MEDIA_ROOT=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'files'),
+        MEDIA_URL='/media/'
     )
 
     try:

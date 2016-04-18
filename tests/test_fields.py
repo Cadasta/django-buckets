@@ -1,5 +1,9 @@
-import pytest
+import os
+
+from django.conf import settings
 from buckets.fields import S3File, S3FileField
+from .mocks import FakeS3Storage, create_file, make_dirs  # noqa
+
 
 # #############################################################################
 #
@@ -7,16 +11,58 @@ from buckets.fields import S3File, S3FileField
 #
 # #############################################################################
 
+def test_init():
+    field = S3FileField(storage=FakeS3Storage)
+    file = S3File('https://example.com/text.txt', field)
 
-def test_initialization():
-    file = S3File(url='https://example.com/test.text')
-    assert file.url == 'https://example.com/test.text'
+    assert file.url == 'https://example.com/text.txt'
+    assert file.field is field
+    assert file.storage is FakeS3Storage
 
 
-def test_initialization_without_url():
-    with pytest.raises(AssertionError) as e:
-        S3File()
-    assert e.value.msg == "Cannot initialize S3File, url not set"
+def test_get_file(make_dirs):  # noqa
+    file = create_file()
+    with open(os.path.join(settings.MEDIA_ROOT,
+              'uploads', 'text.txt'), 'wb') as dest_file:
+        dest_file.write(open(file.name, 'rb').read())
+
+    field = S3FileField(upload_to='uploads', storage=FakeS3Storage())
+
+    s3_file = S3File('/media/uploads/text.txt', field)
+    downloaded = s3_file.open()
+
+    assert downloaded.read().decode() == 'Some content'
+    assert os.path.isfile(os.path.join(os.getcwd(),
+                                       'tests/files/downloads/text.txt'))
+
+
+def test_set_file_and_save(make_dirs):   # noqa
+    field = S3FileField(upload_to='uploads', storage=FakeS3Storage())
+    s3_file = S3File('/media/uploads/text.txt', field)
+    s3_file.file = create_file()
+    assert s3_file.commited is False
+    s3_file.save()
+
+    assert s3_file.commited is True
+    assert os.path.isfile(os.path.join(os.getcwd(),
+                                       'tests/files/uploads/text.txt'))
+
+
+def test_get_file(make_dirs):  # noqa
+    file = create_file()
+    with open(os.path.join(settings.MEDIA_ROOT,
+              'uploads', 'text.txt'), 'wb') as dest_file:
+        dest_file.write(open(file.name, 'rb').read())
+
+    field = S3FileField(upload_to='uploads', storage=FakeS3Storage())
+
+    s3_file = S3File('/media/uploads/text.txt', field)
+    s3_file.file = dest_file
+    s3_file.delete()
+
+    assert not hasattr(s3_file, '_file')
+    assert not os.path.isfile(os.path.join(os.getcwd(),
+                                           'tests/files/uploads/text.txt'))
 
 
 # #############################################################################
@@ -24,11 +70,6 @@ def test_initialization_without_url():
 # S3FileField
 #
 # #############################################################################
-
-
-class FakeStorage(object):
-    pass
-
 
 def test_deconstruct_default_kwargs():
     field = S3FileField()
@@ -45,7 +86,7 @@ def test_deconstruct_default_kwargs():
 
 def test_deconstruct_custom_kwargs():
     field = S3FileField(upload_to='/uploads/',
-                        storage=FakeStorage,
+                        storage=FakeS3Storage,
                         max_length=400)
     name, path, args, kwargs = field.deconstruct()
 
@@ -55,7 +96,7 @@ def test_deconstruct_custom_kwargs():
 
     assert kwargs['max_length'] == 400
     assert kwargs['upload_to'] == '/uploads/'
-    assert kwargs['storage'] == FakeStorage
+    assert kwargs['storage'] == FakeS3Storage
 
 
 def test_from_db_value():
@@ -73,8 +114,8 @@ def test_to_python_with_None():
 
 
 def test_to_python_with_S3File():
-    file = S3File(url='https://example.com/test.text')
     field = S3FileField()
+    file = S3File('https://example.com/test.text', field)
     python_obj = field.to_python(file)
     assert python_obj is file
 

@@ -1,15 +1,46 @@
-from django.utils.translation import ugettext as _
+
+import os
 from django.core.files.storage import default_storage
 from django.db import models
 
 
 class S3File(object):
-    def __init__(self, url=None):
-        assert url, _("Cannot initialize S3File, url not set")
-
+    def __init__(self, url, field):
+        self.field = field
+        self.storage = field.storage
         self.url = url
-    # have a look at https://github.com/django/django/blob/master/django/db/models/fields/files.py
-    # this is pretty much what we need here
+        self.committed = True
+
+    def _get_file(self):
+        if not hasattr(self, '_file') or not self._file:
+            self._file = self.storage.open(self.url)
+
+    def _set_file(self, file):
+        self._file = file
+        self.commited = False
+
+    def _del_file(self):
+        self.storage.delete(self.url)
+        if hasattr(self, '_file'):
+            del self._file
+
+        self.url = ''
+
+    file = property(_get_file, _set_file, _del_file)
+
+    def open(self):
+        self._get_file()
+        return self._file
+
+    def save(self):
+        if not self.commited:
+            name = os.path.join(self.field.upload_to,
+                                os.path.basename(self._file.name))
+            self.storage.save(name, self._file)
+            self.commited = True
+
+    def delete(self):
+        self._del_file()
 
 
 class S3FileField(models.URLField):
@@ -37,10 +68,10 @@ class S3FileField(models.URLField):
         return name, path, args, kwargs
 
     def from_db_value(self, value, expression, connection, context):
-        return S3File(url=value)
+        return S3File(value, self)
 
     def to_python(self, value):
         if value is None or isinstance(value, S3File):
             return value
 
-        return S3File(url=value)
+        return S3File(value, self)
