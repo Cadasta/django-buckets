@@ -5,7 +5,8 @@ from django.db import models
 
 from buckets.fields import S3File, S3FileField
 from buckets.widgets import S3FileUploadWidget
-from .mocks import FakeS3Storage, create_file, make_dirs  # noqa
+from buckets.test.mocks import create_file, make_dirs  # noqa
+from buckets.test.storage import FakeS3Storage
 
 
 #############################################################################

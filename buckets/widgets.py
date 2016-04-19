@@ -6,7 +6,8 @@ from django.utils.safestring import mark_safe
 class S3FileUploadWidget(widgets.TextInput):
     default_html = (
         '<div class="s3upload">'
-        '   <input class="file-url" type="hidden" value="{file_url}" id="{element_id}" name="{name}" />'
+        '   <input class="file-url" type="hidden" value="{file_url}"'
+        '          id="{element_id}" name="{name}" />'
         '   <input class="file-destination" type="hidden" value="{dest}">'
         '   <input class="file-input" type="file" />'
         '</div>'
@@ -17,7 +18,7 @@ class S3FileUploadWidget(widgets.TextInput):
         storage = kwargs.pop('storage')
         self.dest = storage.get_signed_url(client_method='put_object',
                                            http_method='PUT')
-        print('self.dest')
+
         super(S3FileUploadWidget, self).__init__(*args, **kwargs)
 
     def render(self, name, value, attrs=None):

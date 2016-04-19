@@ -35,7 +35,6 @@ def validate_payload(payload):
 
 @require_POST
 def signed_url(request):
-    # print(default_storage)
     if not hasattr(default_storage, 'get_signed_url'):
         response = {'error': 'Not found'}
         status = 404
