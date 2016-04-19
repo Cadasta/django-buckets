@@ -57,3 +57,6 @@ class FakeS3Storage(object):
         name = os.path.basename(urllib.request.url2pathname(url))
         uploaded = os.path.join(self.dir, 'uploads', name)
         os.remove(uploaded)
+
+    def get_signed_url(self, client_method=None, http_method=None):
+        return '/fakes3/'

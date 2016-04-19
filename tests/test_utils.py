@@ -31,9 +31,3 @@ def test_validate_settings(settings):
     with pytest.raises(AssertionError) as e:
         utils.validate_settings()
     assert 'AWS access key is not set in settings' in str(e.value)
-
-
-def test_get_signed_url():
-    assert ('https://s3.amazonaws.com/some-bucket/' in
-            utils.get_signed_url(client_method='put_object',
-                                 http_method='PUT'))

@@ -38,6 +38,7 @@ def pytest_configure():
             'buckets',
             'tests',
         ),
+        DEFAULT_FILE_STORAGE='buckets.storage.S3Storage',
         AWS={
             'BUCKET': 'some-bucket',
             'ACCESS_KEY': 'AAAAAAAAAAAAAAAAAAAA',

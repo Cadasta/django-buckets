@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import models
 
 from buckets.fields import S3File, S3FileField
+from buckets.widgets import S3FileUploadWidget
 from .mocks import FakeS3Storage, create_file, make_dirs  # noqa
 
 
@@ -14,12 +15,12 @@ from .mocks import FakeS3Storage, create_file, make_dirs  # noqa
 #############################################################################
 
 def test_init():
-    field = S3FileField(storage=FakeS3Storage)
+    field = S3FileField(storage=FakeS3Storage())
     file = S3File('https://example.com/text.txt', field)
 
     assert file.url == 'https://example.com/text.txt'
     assert file.field is field
-    assert file.storage is FakeS3Storage
+    assert isinstance(file.storage, FakeS3Storage)
 
 
 def test_get_file(make_dirs):  # noqa
@@ -89,7 +90,7 @@ def test_deconstruct_default_kwargs():
 
 def test_deconstruct_custom_kwargs():
     field = S3FileField(upload_to='/uploads/',
-                        storage=FakeS3Storage,
+                        storage=FakeS3Storage(),
                         max_length=400)
     name, path, args, kwargs = field.deconstruct()
 
@@ -99,7 +100,7 @@ def test_deconstruct_custom_kwargs():
 
     assert kwargs['max_length'] == 400
     assert kwargs['upload_to'] == '/uploads/'
-    assert kwargs['storage'] == FakeS3Storage
+    assert isinstance(kwargs['storage'], FakeS3Storage)
 
 
 def test_from_db_value():
@@ -141,6 +142,12 @@ def test_get_prep_value():
 def test_get_internal_type():
     field = S3FileField()
     assert field.get_internal_type() == 'URLField'
+
+
+def test_formfield():
+    field = S3FileField()
+    form_field = field.formfield()
+    assert isinstance(form_field.widget, S3FileUploadWidget)
 
 
 class FileModel(models.Model):

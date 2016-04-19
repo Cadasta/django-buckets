@@ -3,6 +3,8 @@ import os
 from django.core.files.storage import default_storage
 from django.db import models
 
+from .widgets import S3FileUploadWidget
+
 
 class S3File(object):
     def __init__(self, url, field):
@@ -60,6 +62,7 @@ class S3FileField(models.Field):
     def __init__(self, upload_to='', storage=None, *args, **kwargs):
         self.storage = storage or default_storage
         self.upload_to = upload_to
+        self.widget = S3FileUploadWidget(storage=self.storage)
 
         kwargs['max_length'] = kwargs.get('max_length', 200)
         super(S3FileField, self).__init__(*args, **kwargs)
@@ -102,3 +105,7 @@ class S3FileField(models.Field):
         file.save()
 
         return file.url
+
+    def formfield(self, *args, **kwargs):
+        kwargs['widget'] = self.widget
+        return super(S3FileField, self).formfield(*args, **kwargs)
