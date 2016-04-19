@@ -23,7 +23,7 @@ class FakeS3Storage(object):
         url = '/media/' + name
 
         with open(os.path.join(self.dir, name), 'wb') as dest_file:
-            dest_file.write(open(content.name, 'rb').read())
+            dest_file.write(content.read())
             dest_file.close()
 
         return url
