@@ -7,6 +7,8 @@ def pytest_configure():
     import os
     from django.conf import settings
 
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
     settings.configure(
         DEBUG_PROPAGATE_EXCEPTIONS=True,
         DATABASES={'default': {'ENGINE': 'django.db.backends.sqlite3',
@@ -37,6 +39,7 @@ def pytest_configure():
 
             'buckets',
             'tests',
+            # 'example.exampleapp',
         ),
         DEFAULT_FILE_STORAGE='buckets.storage.S3Storage',
         AWS={
@@ -45,7 +48,7 @@ def pytest_configure():
             'SECRET_KEY': 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC',
         },
         ROOT_URLCONF='buckets.test.urls',
-        MEDIA_ROOT=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'files'),
+        MEDIA_ROOT=os.path.join(os.path.dirname(BASE_DIR), 'files'),
         MEDIA_URL='/media/',
     )
 

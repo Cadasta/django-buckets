@@ -1,0 +1,15 @@
+.s3-buckets .file-links {
+    display: none;
+}
+
+.s3-buckets .file-input {
+    display: block;
+}
+
+.s3-buckets.uploaded .file-links {
+    display: block;
+}
+
+.s3-buckets.uploaded .file-input {
+    display: none;
+}

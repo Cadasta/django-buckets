@@ -25,8 +25,8 @@ def test_open(make_dirs):  # noqa
     store = FakeS3Storage()
     downloaded = store.open('/media/uploads/text.txt')
     assert downloaded.read().decode() == 'Some content'
-    assert os.path.isfile(os.path.join(os.getcwd(),
-                          'tests/files/downloads/text.txt'))
+    assert os.path.isfile(
+        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
 
 
 def test_save(make_dirs):  # noqa
@@ -37,8 +37,8 @@ def test_save(make_dirs):  # noqa
         SimpleUploadedFile('text.txt', open(file.name, 'rb').read()))
 
     assert url == '/media/uploads/text.txt'
-    assert os.path.isfile(os.path.join(os.getcwd(),
-                          'tests/files/uploads/text.txt'))
+    assert os.path.isfile(
+        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
 
 
 def test_delete(make_dirs):  # noqa
@@ -49,8 +49,8 @@ def test_delete(make_dirs):  # noqa
 
     store = FakeS3Storage()
     store.delete('/media/uploads/text.txt')
-    assert not os.path.isfile(os.path.join(os.getcwd(),
-                              'tests/files/uploads/text.txt'))
+    assert not os.path.isfile(
+        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
 
 
 #############################################################################
@@ -86,11 +86,11 @@ def test_post_upload_file(make_dirs, monkeypatch):  # noqa
     file = create_file()
     request = HttpRequest()
     setattr(request, 'method', 'POST')
-    setattr(request, 'POST', {
+    setattr(request, 'FILES', {
         'file': SimpleUploadedFile('text.txt', open(file.name, 'rb').read())
     })
 
     response = views.fake_s3_upload(request)
-    assert response.status_code == 200
-    assert os.path.isfile(os.path.join(os.getcwd(),
-                          'tests/files/uploads/text.txt'))
+    assert response.status_code == 201
+    assert os.path.isfile(
+        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))

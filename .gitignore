@@ -3,3 +3,8 @@
 .coverage
 __pycache__
 .DS_Store
+db.sqlite3
+
+# Temporary
+buckets/storage.py
+tests/test_storage.py

@@ -1,13 +1,14 @@
 import os
+import pytest
 
 from django.conf import settings
-from django.db import models
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from buckets.fields import S3File, S3FileField
 from buckets.widgets import S3FileUploadWidget
 from buckets.test.mocks import create_file, make_dirs  # noqa
 from buckets.test.storage import FakeS3Storage
+from .models import FileModel
 
 
 #############################################################################
@@ -37,8 +38,8 @@ def test_get_file(make_dirs):  # noqa
     downloaded = s3_file.open()
 
     assert downloaded.read().decode() == 'Some content'
-    assert os.path.isfile(os.path.join(os.getcwd(),
-                                       'tests/files/downloads/text.txt'))
+    assert os.path.isfile(
+        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
 
 
 def test_set_file_and_save(make_dirs):   # noqa
@@ -51,8 +52,8 @@ def test_set_file_and_save(make_dirs):   # noqa
 
     assert url == '/media/uploads/text.txt'
     assert s3_file.committed is True
-    assert os.path.isfile(os.path.join(os.getcwd(),
-                                       'tests/files/uploads/text.txt'))
+    assert os.path.isfile(
+        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
 
 
 def test_delete_file(make_dirs):  # noqa
@@ -68,8 +69,8 @@ def test_delete_file(make_dirs):  # noqa
     s3_file.delete()
 
     assert not hasattr(s3_file, '_file')
-    assert not os.path.isfile(os.path.join(os.getcwd(),
-                                           'tests/files/uploads/text.txt'))
+    assert not os.path.isfile(
+        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
 
 
 # #############################################################################
@@ -144,7 +145,7 @@ def test_get_prep_value():
 
 def test_get_internal_type():
     field = S3FileField()
-    assert field.get_internal_type() == 'URLField'
+    assert field.get_internal_type() == 'CharField'
 
 
 def test_formfield():
@@ -153,11 +154,12 @@ def test_formfield():
     assert isinstance(form_field.widget, S3FileUploadWidget)
 
 
-class FileModel(models.Model):
-    s3_file = S3FileField()
-
-    class Meta:
-        app_label = 'core'
+@pytest.mark.django_db
+def test_save():
+    m = FileModel.objects.create(
+        s3_file='http://example.com'
+    )
+    assert isinstance(m.s3_file, S3File)
 
 
 def test_pre_save():

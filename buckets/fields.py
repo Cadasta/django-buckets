@@ -51,6 +51,9 @@ class S3FileDescriptor(object):
     def __init__(self, field):
         self.field = field
 
+    def __get__(self, instance, value):
+        return instance.__dict__[self.field.name]
+
     def __set__(self, instance, value):
         instance.__dict__[self.field.name] = S3File(value, self.field)
 
@@ -67,8 +70,11 @@ class S3FileField(models.Field):
         kwargs['max_length'] = kwargs.get('max_length', 200)
         super(S3FileField, self).__init__(*args, **kwargs)
 
+    # def db_type(self, connection):
+    #     return 'char'
+
     def get_internal_type(self):
-        return 'URLField'
+        return 'CharField'
 
     def contribute_to_class(self, cls, name, **kwargs):
         super(S3FileField, self).contribute_to_class(cls, name, **kwargs)
@@ -98,7 +104,10 @@ class S3FileField(models.Field):
         return S3File(value, self)
 
     def get_prep_value(self, value):
-        return value.url
+        if isinstance(value, S3File):
+            return value.url
+
+        return value
 
     def pre_save(self, model_instance, add):
         file = getattr(model_instance, self.name)

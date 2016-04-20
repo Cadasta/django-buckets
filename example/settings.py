@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'buckets',
     'exampleapp',
 ]
 
@@ -84,9 +85,13 @@ DATABASES = {
     }
 }
 
-DEFAULT_FILE_STORAGE = 'tests.mocks.FakeS3Storage'
+DEFAULT_FILE_STORAGE = 'buckets.test.storage.FakeS3Storage'
 
 
 # Static files (CSS, JavaScript, Images)
 
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'files')
+MEDIA_URL = '/media/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'

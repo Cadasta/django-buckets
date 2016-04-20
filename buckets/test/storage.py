@@ -1,7 +1,6 @@
 import os
 import urllib
 
-from django.core.urlresolvers import reverse
 from django.conf import settings
 
 
@@ -13,18 +12,18 @@ class FakeS3Storage(object):
         name = os.path.basename(urllib.request.url2pathname(url))
         uploaded = os.path.join(self.dir, 'uploads', name)
 
-        with open(os.path.join(self.dir, 'downloads', name), 'wb') as dest_file:
-            dest_file.write(open(uploaded, 'rb').read())
-            dest_file.close()
+        with open(os.path.join(self.dir, 'downloads', name), 'wb') as dest:
+            dest.write(open(uploaded, 'rb').read())
+            dest.close()
 
-        return open(dest_file.name, 'rb')
+        return open(dest.name, 'rb')
 
     def save(self, name, content):
         url = '/media/' + name
 
-        with open(os.path.join(self.dir, name), 'wb') as dest_file:
-            dest_file.write(content.read())
-            dest_file.close()
+        with open(os.path.join(self.dir, name), 'wb') as dest:
+            dest.write(content.read())
+            dest.close()
 
         return url
 
@@ -34,4 +33,4 @@ class FakeS3Storage(object):
         os.remove(uploaded)
 
     def get_signed_url(self, client_method=None, http_method=None):
-        reverse('fake_s3_upload')
+        return '/s3/files/'

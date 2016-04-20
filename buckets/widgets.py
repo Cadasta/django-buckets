@@ -5,19 +5,32 @@ from django.utils.safestring import mark_safe
 
 class S3FileUploadWidget(widgets.TextInput):
     default_html = (
-        '<div class="s3upload">'
+        '<div class="s3-buckets {uploaded_class}" data-upload-url="{upload_url}">'
+        '   <div class="file-links">'
+        '       <a class="file-link" href="{file_url}">{file_name}</a>'
+        '       <a class="file-remove" href="#">(Remove)</a>'
+        '   </div>'
         '   <input class="file-url" type="hidden" value="{file_url}"'
         '          id="{element_id}" name="{name}" />'
-        '   <input class="file-destination" type="hidden" value="{dest}">'
         '   <input class="file-input" type="file" />'
         '</div>'
     )
 
+    class Media:
+        js = (
+            'buckets/js/script.js',
+        )
+        css = {
+            'all': (
+                'buckets/css/buckets.css',
+            )
+        }
+
     def __init__(self, *args, **kwargs):
         self.html = kwargs.pop('html', self.default_html)
         storage = kwargs.pop('storage')
-        self.dest = storage.get_signed_url(client_method='put_object',
-                                           http_method='PUT')
+        self.upload_url = storage.get_signed_url(client_method='put_object',
+                                                 http_method='PUT')
 
         super(S3FileUploadWidget, self).__init__(*args, **kwargs)
 
@@ -26,8 +39,9 @@ class S3FileUploadWidget(widgets.TextInput):
             name=name,
             file_url=value or '',
             element_id=self.build_attrs(attrs).get('id'),
-            file_name=basename(value or ''),
-            dest=self.dest,
+            file_name=basename(value) if value else '',
+            upload_url=self.upload_url,
+            uploaded_class=('uploaded' if value else '')
         )
 
         return mark_safe(output)
