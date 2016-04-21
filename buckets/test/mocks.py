@@ -6,11 +6,11 @@ from django.conf import settings
 
 
 def ensure_dirs():
-    path = os.path.join(settings.MEDIA_ROOT, 'uploads')
+    path = os.path.join(settings.MEDIA_ROOT, 's3', 'uploads')
     if not os.path.exists(path):
         os.makedirs(path)
 
-    path = os.path.join(settings.MEDIA_ROOT, 'downloads')
+    path = os.path.join(settings.MEDIA_ROOT, 's3', 'downloads')
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -20,12 +20,12 @@ def make_dirs(request):
     ensure_dirs()
 
     def teardown():
-        shutil.rmtree(settings.MEDIA_ROOT)
+        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 's3'))
     request.addfinalizer(teardown)
 
 
 def create_file():
-    path = os.path.join(settings.MEDIA_ROOT, 'text.txt')
+    path = os.path.join(settings.MEDIA_ROOT, 's3', 'text.txt')
     file = open(path, 'wb')
     file.write('Some content'.encode('utf-8'))
     file.close()

@@ -6,7 +6,7 @@ from django.conf import settings
 
 class FakeS3Storage(object):
     def __init__(self, dir=None):
-        self.dir = dir or settings.MEDIA_ROOT
+        self.dir = dir or os.path.join(settings.MEDIA_ROOT, 's3')
 
     def open(self, url):
         name = os.path.basename(urllib.request.url2pathname(url))
@@ -19,7 +19,7 @@ class FakeS3Storage(object):
         return open(dest.name, 'rb')
 
     def save(self, name, content):
-        url = '/media/' + name
+        url = '/media/s3/' + name
 
         with open(os.path.join(self.dir, name), 'wb') as dest:
             dest.write(content.read())

@@ -19,14 +19,14 @@ from buckets.test import views
 def test_open(make_dirs):  # noqa
     file = create_file()
     with open(os.path.join(settings.MEDIA_ROOT,
-              'uploads', 'text.txt'), 'wb') as dest_file:
+              's3', 'uploads', 'text.txt'), 'wb') as dest_file:
         dest_file.write(open(file.name, 'rb').read())
 
     store = FakeS3Storage()
-    downloaded = store.open('/media/uploads/text.txt')
+    downloaded = store.open('/media/s3/uploads/text.txt')
     assert downloaded.read().decode() == 'Some content'
     assert os.path.isfile(
-        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
+        os.path.join(settings.MEDIA_ROOT, 's3', 'uploads', 'text.txt'))
 
 
 def test_save(make_dirs):  # noqa
@@ -36,21 +36,21 @@ def test_save(make_dirs):  # noqa
         'uploads/text.txt',
         SimpleUploadedFile('text.txt', open(file.name, 'rb').read()))
 
-    assert url == '/media/uploads/text.txt'
+    assert url == '/media/s3/uploads/text.txt'
     assert os.path.isfile(
-        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
+        os.path.join(settings.MEDIA_ROOT, 's3', 'uploads', 'text.txt'))
 
 
 def test_delete(make_dirs):  # noqa
     file = create_file()
     with open(os.path.join(settings.MEDIA_ROOT,
-              'uploads', 'text.txt'), 'wb') as dest_file:
+              's3', 'uploads', 'text.txt'), 'wb') as dest_file:
         dest_file.write(open(file.name, 'rb').read())
 
     store = FakeS3Storage()
-    store.delete('/media/uploads/text.txt')
+    store.delete('/media/s3/uploads/text.txt')
     assert not os.path.isfile(
-        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
+        os.path.join(settings.MEDIA_ROOT, 's3,' 'uploads', 'text.txt'))
 
 
 #############################################################################
@@ -93,4 +93,4 @@ def test_post_upload_file(make_dirs, monkeypatch):  # noqa
     response = views.fake_s3_upload(request)
     assert response.status_code == 201
     assert os.path.isfile(
-        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
+        os.path.join(settings.MEDIA_ROOT, 's3', 'uploads', 'text.txt'))

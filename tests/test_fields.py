@@ -29,37 +29,37 @@ def test_init():
 def test_get_file(make_dirs):  # noqa
     file = create_file()
     with open(os.path.join(settings.MEDIA_ROOT,
-              'uploads', 'text.txt'), 'wb') as dest_file:
+              's3', 'uploads', 'text.txt'), 'wb') as dest_file:
         dest_file.write(open(file.name, 'rb').read())
 
     field = S3FileField(upload_to='uploads', storage=FakeS3Storage())
 
-    s3_file = S3File('/media/uploads/text.txt', field)
+    s3_file = S3File('/media/s3/uploads/text.txt', field)
     downloaded = s3_file.open()
 
     assert downloaded.read().decode() == 'Some content'
     assert os.path.isfile(
-        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
+        os.path.join(settings.MEDIA_ROOT, 's3', 'uploads', 'text.txt'))
 
 
 def test_set_file_and_save(make_dirs):   # noqa
     field = S3FileField(upload_to='uploads', storage=FakeS3Storage())
-    s3_file = S3File('/media/uploads/text.txt', field)
+    s3_file = S3File('/media/s3/uploads/text.txt', field)
     s3_file.file = SimpleUploadedFile(
         'text.txt', open(create_file().name, 'rb').read())
     assert s3_file.committed is False
     url = s3_file.save()
 
-    assert url == '/media/uploads/text.txt'
+    assert url == '/media/s3/uploads/text.txt'
     assert s3_file.committed is True
     assert os.path.isfile(
-        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
+        os.path.join(settings.MEDIA_ROOT, 's3', 'uploads', 'text.txt'))
 
 
 def test_delete_file(make_dirs):  # noqa
     file = create_file()
     with open(os.path.join(settings.MEDIA_ROOT,
-              'uploads', 'text.txt'), 'wb') as dest_file:
+              's3', 'uploads', 'text.txt'), 'wb') as dest_file:
         dest_file.write(open(file.name, 'rb').read())
 
     field = S3FileField(upload_to='uploads', storage=FakeS3Storage())
@@ -70,7 +70,7 @@ def test_delete_file(make_dirs):  # noqa
 
     assert not hasattr(s3_file, '_file')
     assert not os.path.isfile(
-        os.path.join(settings.MEDIA_ROOT, 'uploads', 'text.txt'))
+        os.path.join(settings.MEDIA_ROOT, 's3', 'uploads', 'text.txt'))
 
 
 # #############################################################################
