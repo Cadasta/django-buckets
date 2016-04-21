@@ -6,7 +6,8 @@ from buckets.test.storage import FakeS3Storage
 def test_render_empty():
     storage = FakeS3Storage()
     expected = (
-        '<div class="s3-buckets " data-upload-url="{upload_url}">'
+        '<div class="s3-buckets "'
+        '     data-upload-url="{upload_url}">'
         '   <div class="file-links">'
         '       <a class="file-link" href=""></a>'
         '       <a class="file-remove" href="#">(Remove)</a>'
@@ -31,7 +32,8 @@ def test_render_value():
     storage = FakeS3Storage()
     file = S3File('/someurl/text.txt', S3FileField())
     expected = (
-        '<div class="s3-buckets uploaded" data-upload-url="{upload_url}">'
+        '<div class="s3-buckets uploaded"'
+        '     data-upload-url="{upload_url}">'
         '   <div class="file-links">'
         '       <a class="file-link" href="{value}">{file_name}</a>'
         '       <a class="file-remove" href="#">(Remove)</a>'

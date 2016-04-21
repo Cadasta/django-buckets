@@ -5,7 +5,8 @@ from django.utils.safestring import mark_safe
 
 class S3FileUploadWidget(widgets.TextInput):
     default_html = (
-        '<div class="s3-buckets {uploaded_class}" data-upload-url="{upload_url}">'
+        '<div class="s3-buckets {uploaded_class}"'
+        '     data-upload-url="{upload_url}">'
         '   <div class="file-links">'
         '       <a class="file-link" href="{file_url}">{file_name}</a>'
         '       <a class="file-remove" href="#">(Remove)</a>'
