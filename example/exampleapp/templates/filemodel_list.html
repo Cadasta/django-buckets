@@ -1,0 +1,38 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>django-buckets Files</title>
+</head>
+<body>
+    <h1>Files you have uploaded</h1>
+
+    <table cellspacing="20">
+        <thead>
+            <tr>
+                <th>File name</th>
+                <th>File link</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for f in object_list %}
+            <tr>
+                <td>{{ f.name }}</td>
+                <td><a href="{{ f.file.url }}">{{ f.file.url }}</a></td>
+                <td><a href="{% url 'file_update' f.pk %}">Edit</a></td>
+            </tr>
+
+            {% if forloop.last %}
+            <tr>
+                <td colspan="3" align="center"><a href="{% url 'file_create' %}">Add another file</td>
+            </tr>
+            {% endif%}
+        {% empty %}
+            <tr>
+                <td colspan="3">Nothing here. <a href="{% url 'file_create' %}">Upload a new file</td>
+            </tr>
+        {% endfor %}        
+        </tbody>
+    </table>
+</body>
+</html>

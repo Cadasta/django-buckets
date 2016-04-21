@@ -35,11 +35,13 @@ class S3FileUploadWidget(widgets.TextInput):
         super(S3FileUploadWidget, self).__init__(*args, **kwargs)
 
     def render(self, name, value, attrs=None):
+        file_url = value.url if value else ''
+
         output = self.html.format(
             name=name,
-            file_url=value or '',
+            file_url=file_url,
             element_id=self.build_attrs(attrs).get('id'),
-            file_name=basename(value) if value else '',
+            file_name=basename(file_url) if file_url else '',
             upload_url=self.upload_url,
             uploaded_class=('uploaded' if value else '')
         )

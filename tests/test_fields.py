@@ -155,11 +155,17 @@ def test_formfield():
 
 
 @pytest.mark.django_db
-def test_save():
-    m = FileModel.objects.create(
-        s3_file='http://example.com'
-    )
+def test_save_with_url():
+    m = FileModel.objects.create(s3_file='http://example.com')
     assert isinstance(m.s3_file, S3File)
+    assert m.s3_file.url == 'http://example.com'
+
+
+@pytest.mark.django_db
+def test_save_with_file():
+    file = S3File('/someurl/text.txt', S3FileField())
+    m = FileModel.objects.create(s3_file=file)
+    assert m.s3_file is file
 
 
 def test_pre_save():

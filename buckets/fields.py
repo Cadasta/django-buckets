@@ -55,7 +55,10 @@ class S3FileDescriptor(object):
         return instance.__dict__[self.field.name]
 
     def __set__(self, instance, value):
-        instance.__dict__[self.field.name] = S3File(value, self.field)
+        if isinstance(value, S3File):
+            instance.__dict__[self.field.name] = value
+        else:
+            instance.__dict__[self.field.name] = S3File(value, self.field)
 
 
 class S3FileField(models.Field):
@@ -69,9 +72,6 @@ class S3FileField(models.Field):
 
         kwargs['max_length'] = kwargs.get('max_length', 200)
         super(S3FileField, self).__init__(*args, **kwargs)
-
-    # def db_type(self, connection):
-    #     return 'char'
 
     def get_internal_type(self):
         return 'CharField'

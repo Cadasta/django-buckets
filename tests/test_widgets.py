@@ -1,4 +1,5 @@
 from buckets.widgets import S3FileUploadWidget
+from buckets.fields import S3File, S3FileField
 from buckets.test.storage import FakeS3Storage
 
 
@@ -28,6 +29,7 @@ def test_render_empty():
 
 def test_render_value():
     storage = FakeS3Storage()
+    file = S3File('/someurl/text.txt', S3FileField())
     expected = (
         '<div class="s3-buckets uploaded" data-upload-url="{upload_url}">'
         '   <div class="file-links">'
@@ -47,6 +49,6 @@ def test_render_value():
     )
 
     widget = S3FileUploadWidget(storage=storage)
-    actual = widget.render('file', '/someurl/text.txt')
+    actual = widget.render('file', file)
 
     assert actual == expected

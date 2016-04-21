@@ -6,10 +6,12 @@
 </head>
 <body>
     <h1>Upload a file</h1>
+    {{ object.url }}
     <form action="" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Submit</button>
     </form>
+    <p><a href="{% url 'file_list' %}">Back to files list</a></p>
 </body>
 </html>
