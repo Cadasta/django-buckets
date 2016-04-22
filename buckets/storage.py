@@ -1,3 +1,4 @@
+import os
 from django.conf import settings
 from django.core.files.storage import Storage
 
@@ -23,13 +24,27 @@ class S3Storage(Storage):
 
     def _open(self, name, mode='rb'):
         s3 = self.get_boto_ressource()
-        s3.Object(self.bucket_name, '/oliver-test/' + name).put()
+        f = s3.Object(self.bucket_name, 'oliver-test/' + name).get()
+        write_path = os.path.join(settings.MEDIA_ROOT, 's3', 'downloads', name)
+
+        with open(write_path, 'wb') as w:
+            to_read = True
+            body = f['Body']
+            while to_read:
+                chunk = body.read(1024)
+                if chunk:
+                    w.write(chunk)
+                else:
+                    to_read = False
+
+        return w.name
 
     def _save(self, name, content):
         s3 = self.get_boto_ressource()
-        s3.Object(self.bucket_name, '/oliver-test/' + name).put(Body=content)
+        s3.Object(self.bucket_name, 'oliver-test/' + name).put(Body=content)
 
-        return name
+        return 'https://s3.amazonaws.com/{}/oliver-test/{}'.format(
+            self.bucket_name, name)
 
     def get_available_name(self, name, max_length=None):
         return name

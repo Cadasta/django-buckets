@@ -7,6 +7,3 @@ db.sqlite3
 files
 *.pyc
 .tox
-
-# Temporary
-tests/test_storage.py

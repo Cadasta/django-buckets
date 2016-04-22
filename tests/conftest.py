@@ -43,9 +43,9 @@ def pytest_configure():
         ),
         DEFAULT_FILE_STORAGE='buckets.storage.S3Storage',
         AWS={
-            'BUCKET': 'some-bucket',
-            'ACCESS_KEY': 'AAAAAAAAAAAAAAAAAAAA',
-            'SECRET_KEY': 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC',
+            'BUCKET': os.environ.get('AWS_BUCKET'),
+            'ACCESS_KEY': os.environ.get('AWS_ACCESS_KEY'),
+            'SECRET_KEY': os.environ.get('AWS_SECRET_KEY'),
         },
         ROOT_URLCONF='buckets.test.urls',
         MEDIA_ROOT=os.path.join(os.path.dirname(BASE_DIR), 'files'),

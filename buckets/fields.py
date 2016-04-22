@@ -1,5 +1,5 @@
-
 import os
+from django.utils.translation import ugettext as _
 from django.core.files.storage import default_storage
 from django.db import models
 
@@ -7,6 +7,9 @@ from .widgets import S3FileUploadWidget
 
 
 class S3File(object):
+    """ This is the internal value an `S3FileField`. It provides access to the
+        actual file on S3, e.g. for post-processing. It usually uses an
+        instance of S3Storage to download, upload or delete the file on S3."""
     def __init__(self, url, field):
         self.field = field
         self.storage = field.storage
@@ -15,7 +18,9 @@ class S3File(object):
 
     def _get_file(self):
         if not hasattr(self, '_file') or not self._file:
-            self._file = self.storage.open(self.url)
+            path = self.storage.open(self.url)
+            # print(path)
+            self._file = open(path, 'rb')
 
     def _set_file(self, file):
         self._file = file
@@ -62,8 +67,14 @@ class S3FileDescriptor(object):
 
 
 class S3FileField(models.Field):
+    """ Stores and provides access to a file stored in an AWS S3 bucket. To set
+        the value of an `S3FileField` you usually provide the URL of the file
+        in the bucket. Internally this URL is converted to a `S3File`, which
+        provides access to the actual file on S3."""
     attr_class = S3File
     descriptor_class = S3FileDescriptor
+
+    description = _("A file stored in an AWS S3 buckets.")
 
     def __init__(self, upload_to='', storage=None, *args, **kwargs):
         self.storage = storage or default_storage
