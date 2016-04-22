@@ -10,6 +10,8 @@ from .utils import validate_settings
 
 class S3Storage(Storage):
     def __init__(self):
+        validate_settings()
+
         self.access_key = settings.AWS['ACCESS_KEY']
         self.secret_key = settings.AWS['SECRET_KEY']
         self.bucket_name = settings.AWS['BUCKET']
@@ -53,8 +55,6 @@ class S3Storage(Storage):
         return name
 
     def get_signed_url(self, client_method='get_object', http_method='GET'):
-        validate_settings()
-
         params = {
             'Bucket': self.bucket_name,
             'Key': self.access_key

@@ -1,8 +1,3 @@
-
-
-# os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
 def pytest_configure():
     import os
     from django.conf import settings
@@ -39,7 +34,6 @@ def pytest_configure():
 
             'buckets',
             'tests',
-            # 'example.exampleapp',
         ),
         DEFAULT_FILE_STORAGE='buckets.storage.S3Storage',
         AWS={
