@@ -8,10 +8,7 @@ from buckets import views, exceptions
 
 
 def test_validate_valid_payload():
-    post_payload = {
-        'client_method': 'get_object',
-        'http_method': 'GET'
-    }
+    post_payload = {'key': 'file.txt'}
     views.validate_payload(post_payload)
 
 
@@ -20,22 +17,7 @@ def test_validate_empty_payload():
     with pytest.raises(exceptions.InvalidPayload) as e:
         views.validate_payload(post_payload)
 
-    assert ("'http_method' is required" in e.value.errors['http_method'])
-    assert ("'client_method' is required" in e.value.errors['client_method'])
-
-
-def test_validate_invalid_payload():
-    post_payload = {
-        'client_method': 'patch_object',
-        'http_method': 'patch'
-    }
-    with pytest.raises(exceptions.InvalidPayload) as e:
-        views.validate_payload(post_payload)
-
-    assert ("'http_method' must be one of get, put, delete" in
-            e.value.errors['http_method'])
-    assert ("'client_method' must be one of get_object, put_object, "
-            "delete_object" in e.value.errors['client_method'])
+    assert ("'key' is required" in e.value.errors['key'])
 
 
 def test_get_signed_url():
@@ -50,10 +32,7 @@ def test_get_signed_url():
 
 def test_post_signed_url_with_valid_payload():
     """View should reply with error code 200 and a signed AWS URL"""
-    post_payload = {
-        'client_method': 'get_object',
-        'http_method': 'GET'
-    }
+    post_payload = {'key': 'file.txt'}
 
     request = HttpRequest()
     setattr(request, 'method', 'POST')
@@ -63,16 +42,13 @@ def test_post_signed_url_with_valid_payload():
     content = response.content.decode('utf-8')
 
     assert response.status_code == 200
-    assert 'signed_url' in json.loads(content)
+    assert 'url' in json.loads(content)
 
 
 def test_post_signed_url_where_not_supported(monkeypatch):
     monkeypatch.setattr(views, 'default_storage', FileSystemStorage())
 
-    post_payload = {
-        'client_method': 'get_object',
-        'http_method': 'GET'
-    }
+    post_payload = {'key': 'file.txt'}
 
     request = HttpRequest()
     setattr(request, 'method', 'POST')
@@ -86,9 +62,7 @@ def test_post_signed_url_where_not_supported(monkeypatch):
 
 
 def test_post_signed_url_with_invalid_payload():
-    post_payload = {
-        'client_method': 'get_object',
-    }
+    post_payload = {}
 
     request = HttpRequest()
     setattr(request, 'method', 'POST')
@@ -98,4 +72,4 @@ def test_post_signed_url_with_invalid_payload():
     content = response.content.decode('utf-8')
 
     assert response.status_code == 400
-    assert 'http_method' in json.loads(content)
+    assert 'key' in json.loads(content)

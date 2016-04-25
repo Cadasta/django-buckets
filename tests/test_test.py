@@ -53,6 +53,14 @@ def test_delete(make_dirs):  # noqa
         os.path.join(settings.MEDIA_ROOT, 's3,' 'uploads', 'text.txt'))
 
 
+def test_get_signed_url():
+    store = FakeS3Storage()
+
+    signed = store.get_signed_url(key='file.txt')
+    assert '/media/s3/uploads' == signed['url']
+    assert 'file.txt' == signed['fields']['key']
+
+
 #############################################################################
 
 # URLs
@@ -61,9 +69,9 @@ def test_delete(make_dirs):  # noqa
 
 
 def test_urls():
-    assert reverse('fake_s3_upload') == '/s3/files/'
+    assert reverse('fake_s3_upload') == '/media/s3/uploads'
 
-    resolved = resolve('/s3/files/')
+    resolved = resolve('/media/s3/uploads')
     assert resolved.func.__name__ == views.fake_s3_upload.__name__
 
 
@@ -89,8 +97,11 @@ def test_post_upload_file(make_dirs, monkeypatch):  # noqa
     setattr(request, 'FILES', {
         'file': SimpleUploadedFile('text.txt', open(file.name, 'rb').read())
     })
+    setattr(request, 'POST', {
+        'key': 'text.txt'
+    })
 
     response = views.fake_s3_upload(request)
-    assert response.status_code == 201
+    assert response.status_code == 204
     assert os.path.isfile(
         os.path.join(settings.MEDIA_ROOT, 's3', 'uploads', 'text.txt'))

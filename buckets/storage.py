@@ -26,8 +26,10 @@ class S3Storage(Storage):
 
     def _open(self, name, mode='rb'):
         s3 = self.get_boto_ressource()
-        f = s3.Object(self.bucket_name, 'oliver-test/' + name).get()
-        write_path = os.path.join(settings.MEDIA_ROOT, 's3', 'downloads', name)
+        f = s3.Object(self.bucket_name, name).get()
+        write_path = os.path.join(settings.MEDIA_ROOT,
+                                  's3/downloads',
+                                  name.split('/')[-1])
 
         with open(write_path, 'wb') as w:
             to_read = True
@@ -43,10 +45,9 @@ class S3Storage(Storage):
 
     def _save(self, name, content):
         s3 = self.get_boto_ressource()
-        s3.Object(self.bucket_name, 'oliver-test/' + name).put(Body=content)
+        s3.Object(self.bucket_name, name).put(Body=content)
 
-        return 'https://s3.amazonaws.com/{}/oliver-test/{}'.format(
-            self.bucket_name, name)
+        return 'https://s3.amazonaws.com/{}/{}'.format(self.bucket_name, name)
 
     def get_available_name(self, name, max_length=None):
         return name
@@ -54,10 +55,10 @@ class S3Storage(Storage):
     def get_valid_name(self, name):
         return name
 
-    def get_signed_url(self, client_method='get_object', http_method='GET'):
+    def get_signed_url(self, key=None):
         params = {
             'Bucket': self.bucket_name,
-            'Key': self.access_key
+            'Key': key
         }
 
         client = boto3.client(
@@ -66,11 +67,5 @@ class S3Storage(Storage):
             aws_secret_access_key=self.secret_key,
             config=Config(signature_version='s3v4')
         )
-        signed = client.generate_presigned_url(
-            ClientMethod=client_method,
-            Params=params,
-            ExpiresIn=3600,
-            HttpMethod=http_method
-        )
 
-        return signed
+        return client.generate_presigned_post(**params)

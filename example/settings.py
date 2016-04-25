@@ -86,6 +86,11 @@ DATABASES = {
 }
 
 DEFAULT_FILE_STORAGE = 'buckets.test.storage.FakeS3Storage'
+AWS = {
+    'BUCKET': os.environ.get('AWS_BUCKET'),
+    'ACCESS_KEY': os.environ.get('AWS_ACCESS_KEY'),
+    'SECRET_KEY': os.environ.get('AWS_SECRET_KEY'),
+}
 
 
 # Static files (CSS, JavaScript, Images)

@@ -19,7 +19,6 @@ class S3File(object):
     def _get_file(self):
         if not hasattr(self, '_file') or not self._file:
             path = self.storage.open(self.url)
-            # print(path)
             self._file = open(path, 'rb')
 
     def _set_file(self, file):
@@ -79,7 +78,7 @@ class S3FileField(models.Field):
     def __init__(self, upload_to='', storage=None, *args, **kwargs):
         self.storage = storage or default_storage
         self.upload_to = upload_to
-        self.widget = S3FileUploadWidget(storage=self.storage)
+        self.widget = S3FileUploadWidget(upload_to=upload_to)
 
         kwargs['max_length'] = kwargs.get('max_length', 200)
         super(S3FileField, self).__init__(*args, **kwargs)

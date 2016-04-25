@@ -18,10 +18,12 @@ def get_boto_resource(storage):
 
 def test_get_signed_url():
     bucket_name = settings.AWS.get('BUCKET')
-    storage = storage = S3Storage()
-    assert ('https://s3.amazonaws.com/{}/'.format(bucket_name) in
-            storage.get_signed_url(client_method='put_object',
-                                   http_method='PUT'))
+    storage = S3Storage()
+
+    signed = storage.get_signed_url(key='file.txt')
+
+    assert 'https://s3.amazonaws.com/{}'.format(bucket_name) == signed['url']
+    assert 'file.txt' == signed['fields']['key']
 
 
 def test_get_file(make_dirs):  # noqa
@@ -30,9 +32,9 @@ def test_get_file(make_dirs):  # noqa
 
     storage = S3Storage()
     s3 = get_boto_resource(storage)
-    s3.Object(storage.bucket_name, 'oliver-test/uploaded.txt').put(Body=file)
+    s3.Object(storage.bucket_name, 'test/uploaded.txt').put(Body=file)
 
-    file = storage.open('uploaded.txt')
+    file = storage.open('test/uploaded.txt')
     assert open(file, 'rb').read().decode() == "Some content"
 
 
@@ -41,9 +43,9 @@ def test_upload_file(make_dirs):  # noqa
     file = open(txt.name, 'rb')
 
     storage = S3Storage()
-    url = storage.save('text.txt', file)
+    url = storage.save('test/text.txt', file)
     name = url.split('/')[-1]
 
     s3 = get_boto_resource(storage)
-    o = s3.Object(storage.bucket_name, 'oliver-test/' + name).get()
+    o = s3.Object(storage.bucket_name, 'test/' + name).get()
     assert("Some content" in o['Body'].read(o['ContentLength']).decode())

@@ -32,5 +32,5 @@ class FakeS3Storage(object):
         uploaded = os.path.join(self.dir, 'uploads', name)
         os.remove(uploaded)
 
-    def get_signed_url(self, client_method=None, http_method=None):
-        return '/s3/files/'
+    def get_signed_url(self, key=None):
+        return {'url': '/media/s3/uploads', 'fields': {'key': key}}

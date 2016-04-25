@@ -1,5 +1,4 @@
 (function () {
-    
     function getParentByTagName(el, tagName) {
         var p = el.parentElement;
 
@@ -36,23 +35,15 @@
         el.insertBefore(errorList, el.firstChild);
     }
 
-    function getUrl(text) {
-        var xml = new DOMParser().parseFromString(text, 'text/xml'),
-            tag = xml.getElementsByTagName('Location')[0],
-            url = unescape(tag.childNodes[0].nodeValue)
-
-        return url
-    }
-
-    function update(el, xml) {
+    function update(el, fileUrl) {
         var link = el.querySelector('.file-link'),
             url = el.querySelector('.file-url');
 
         if (errs = el.querySelector('.errors')) { errs.remove(); }
 
-        url.value = getUrl(xml);
-        link.href = url.value;
-        link.innerHTML = url.value.split('/').pop();
+        url.value = fileUrl;
+        link.href = fileUrl;
+        link.innerHTML = fileUrl.split('/').pop();
 
         el.classList.add('uploaded');
     }
@@ -84,22 +75,44 @@
         req.send(data)
     }
 
-    function uploadFile(e) {
-
+    function uploadFile(e, data) {
         var el = e.target.parentElement,
             file = el.querySelector('.file-input').files[0],
-            url = el.getAttribute('data-upload-url'),
-            form = new FormData(),
+            formData = new FormData(),
             headers  = {'X-CSRFToken': getCookie('csrftoken')};
 
-        disableSubmit(el, true);
-        form.append('file', file);
-        
-        request('POST', url, form, headers, el, function(status, xml) {
-            if (status !== 201) {
+        var url = data.url;
+        Object.keys(data.fields).forEach(function(key){
+            formData.append(key, data.fields[key])
+        })
+        formData.append('file', file);
+                
+        request('POST', url, formData, headers, el, function(status, xml) {
+            if (status !== 204) {
                 error(el, 'Not able to upload file')
             } else {
-                update(el, xml);
+                var fileUrl = data.url + '/' + el.getAttribute('data-upload-to') + '/' + file.name;
+                update(el, fileUrl);
+            }
+        });
+    }
+
+    function getSignedUrl(e) {
+        var el = e.target.parentElement,
+            file = el.querySelector('.file-input').files[0],
+            form = new FormData(),
+            headers  = {'X-CSRFToken': getCookie('csrftoken')},
+            url = '/s3/signed-url/';
+
+        disableSubmit(el, true);
+
+        form.append('key', el.getAttribute('data-upload-to') + '/' + file.name);
+
+        request('POST', url, form, headers, el, function(status, response) {
+            if (status !== 200) {
+                error(el, 'Not able to upload file')
+            } else {
+                uploadFile(e, JSON.parse(response));
             }
         });
     }
@@ -117,7 +130,7 @@
         var input = el.querySelector('.file-input'),
             remove = el.querySelector('.file-remove');
 
-        input.addEventListener('change', uploadFile, false);
+        input.addEventListener('change', getSignedUrl, false);
         remove.addEventListener('click', removeFile, false);
     }
 
