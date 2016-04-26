@@ -33,7 +33,7 @@ def test_save(make_dirs):  # noqa
     file = create_file()
     store = FakeS3Storage()
     url = store.save(
-        'uploads/text.txt',
+        'text.txt',
         SimpleUploadedFile('text.txt', open(file.name, 'rb').read()))
 
     assert url == '/media/s3/uploads/text.txt'

@@ -85,7 +85,7 @@ DATABASES = {
     }
 }
 
-DEFAULT_FILE_STORAGE = 'buckets.test.storage.FakeS3Storage'
+DEFAULT_FILE_STORAGE = 'buckets.storage.S3Storage'
 AWS = {
     'BUCKET': os.environ.get('AWS_BUCKET'),
     'ACCESS_KEY': os.environ.get('AWS_ACCESS_KEY'),

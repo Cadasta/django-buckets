@@ -43,7 +43,7 @@ def test_get_file(make_dirs):  # noqa
 
 
 def test_set_file_and_save(make_dirs):   # noqa
-    field = S3FileField(upload_to='uploads', storage=FakeS3Storage())
+    field = S3FileField(storage=FakeS3Storage())
     s3_file = S3File('/media/s3/uploads/text.txt', field)
     s3_file.file = SimpleUploadedFile(
         'text.txt', open(create_file().name, 'rb').read())

@@ -20,6 +20,7 @@ class S3File(object):
         if not hasattr(self, '_file') or not self._file:
             path = self.storage.open(self.url)
             self._file = open(path, 'rb')
+        return self._file
 
     def _set_file(self, file):
         self._file = file

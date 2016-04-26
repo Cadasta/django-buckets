@@ -19,11 +19,10 @@ class FakeS3Storage(object):
         return dest.name
 
     def save(self, name, content):
-        url = '/media/s3/' + name
+        url = '/media/s3/uploads/' + name
 
-        with open(os.path.join(self.dir, name), 'wb') as dest:
+        with open(os.path.join(self.dir, 'uploads', name), 'wb') as dest:
             dest.write(content.read())
-            dest.close()
 
         return url
 

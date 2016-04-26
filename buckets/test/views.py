@@ -18,6 +18,6 @@ def fake_s3_upload(request):
         os.makedirs(path)
 
     file = request.FILES.get('file')
-    default_storage.save('uploads/' + key, file)
+    default_storage.save(key, file)
 
     return HttpResponse('', status=204)
