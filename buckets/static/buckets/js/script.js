@@ -91,7 +91,12 @@
             if (status !== 204) {
                 error(el, 'Not able to upload file')
             } else {
-                var fileUrl = data.url + '/' + el.getAttribute('data-upload-to') + '/' + file.name;
+                var fileUrl = data.url + '/';
+                if (el.getAttribute('data-upload-to')) {
+                    fileUrl += el.getAttribute('data-upload-to') + '/';
+                }
+                fileUrl += file.name;
+
                 update(el, fileUrl);
             }
         });
@@ -106,7 +111,12 @@
 
         disableSubmit(el, true);
 
-        form.append('key', el.getAttribute('data-upload-to') + '/' + file.name);
+        var key = file.name;
+        if (el.getAttribute('data-upload-to')) {
+            key = el.getAttribute('data-upload-to') + '/' + key;
+        }
+
+        form.append('key', key);
 
         request('POST', url, form, headers, el, function(status, response) {
             if (status !== 200) {
