@@ -4,7 +4,7 @@ from django.views.decorators.http import require_POST
 from django.http import HttpResponse
 from django.conf import settings
 
-from buckets.test.mocks import ensure_dirs
+from buckets.test.utils import ensure_dirs
 
 
 @require_POST
