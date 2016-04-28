@@ -28,12 +28,18 @@ Setup
 For production
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In settings, set :code:`S3Storage` as default default storage and add the S3
-bucket name as well as the AWS access key and secret key.
+In settings, add :code:`buckets` to installed apps, set :code:`S3Storage` as 
+default default storage and add the S3 bucket name as well as the AWS access 
+key and secret key.
 
 .. code-block:: python
 
- DEFAULT_FILE_STORAGE = 'buckets.storage.S3Storage'
+  INSTALLED_APPS = (
+    ...
+    'buckets',
+  )
+
+  DEFAULT_FILE_STORAGE = 'buckets.storage.S3Storage'
 
   AWS = {
     'BUCKET': 'some-bucket',
@@ -68,7 +74,8 @@ requests:
 For testing and development
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In settings, set :code:`S3Storage` as default default storage.
+In settings, In settings, add :code:`buckets` to installed apps and set
+:code:`S3Storage` as default default storage.
 
 .. code-block:: python
 
@@ -80,6 +87,11 @@ it will add a file upload endpoint, which behaves like S3's file upload but
 stores files on the local file system.
 
 .. code-block:: python
+
+  INSTALLED_APPS = (
+    ...
+    'buckets',
+  )
 
   urlpatterns = [
       url(r'', include('buckets.test.urls')),
