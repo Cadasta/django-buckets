@@ -1,0 +1,5 @@
+include README.rst LICENSE
+recursive-include buckets/test *
+recursive-include buckets/static *
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]

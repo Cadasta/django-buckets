@@ -7,3 +7,5 @@ db.sqlite3
 files
 *.pyc
 .tox
+build/
+dist/
