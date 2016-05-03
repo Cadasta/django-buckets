@@ -1,8 +1,7 @@
 django-buckets
 ===============================================================================
 
-.. image:: https://travis-ci.org/Cadasta/django-buckets.svg?branch=master
-    :target: https://travis-ci.org/Cadasta/django-buckets
+|pypi-version| |build-status-image|
 
 django-buckets provides a Django storage system (:code:`S3Storage`) to store files on 
 `Amazon S3 <https://aws.amazon.com/s3/>`_. Besides the storage itself, the 
@@ -24,6 +23,13 @@ Requirements
 
 Setup
 -------------------------------------------------------------------------------
+
+Installation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block::
+
+  pip install django-buckets
 
 For production
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -231,3 +237,9 @@ response and include all :code:`fields` with the request payload.
   Content-Type: application/octet-stream
 
   ------WebKitFormBoundary7LwCXdHGMv2KBDza
+
+
+.. |build-status-image| image:: https://travis-ci.org/Cadasta/django-buckets.svg?branch=master
+    :target: https://travis-ci.org/Cadasta/django-buckets
+.. |pypi-version| image:: https://img.shields.io/pypi/v/django-buckets.svg
+    :target: https://pypi.python.org/pypi/django-buckets
