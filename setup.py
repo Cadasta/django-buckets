@@ -9,8 +9,8 @@ package = 'buckets'
 description = 'Upload files to S3 using pre-signed URLs.'
 url = 'https://github.com/Cadasta/django-buckets'
 author = 'Oliver Roick'
-author_email = 'roick@cadasta.org'
-license = 'BSD'
+author_email = 'oroick@cadasta.org'
+license = 'AGPL'
 
 readme_file = os.path.join(os.path.dirname(__file__), 'README.rst')
 with open(readme_file, 'r') as f:
