@@ -23,7 +23,17 @@ def test_get_signed_url():
     signed = storage.get_signed_url(key='file.txt')
 
     assert 'https://s3.amazonaws.com/{}'.format(bucket_name) == signed['url']
-    assert 'file.txt' == signed['fields']['key']
+    assert len(signed['fields']['key']) == 28
+
+
+def test_get_signed_url_with_subdir():
+    bucket_name = settings.AWS.get('BUCKET')
+    storage = S3Storage()
+
+    signed = storage.get_signed_url(key='subdir/file.txt')
+
+    assert 'https://s3.amazonaws.com/{}'.format(bucket_name) == signed['url']
+    assert len(signed['fields']['key']) == 35
 
 
 def test_get_file(make_dirs):  # noqa

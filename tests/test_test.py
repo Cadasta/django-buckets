@@ -100,8 +100,24 @@ def test_post_upload_file(make_dirs, monkeypatch):  # noqa
     setattr(request, 'POST', {
         'key': 'text.txt'
     })
-
     response = views.fake_s3_upload(request)
     assert response.status_code == 204
     assert os.path.isfile(
         os.path.join(settings.MEDIA_ROOT, 's3', 'uploads', 'text.txt'))
+
+
+def test_post_upload_file_to_subdir(make_dirs, monkeypatch):  # noqa
+    monkeypatch.setattr(views, 'default_storage', FakeS3Storage())
+    file = create_file()
+    request = HttpRequest()
+    setattr(request, 'method', 'POST')
+    setattr(request, 'FILES', {
+        'file': SimpleUploadedFile('text.txt', open(file.name, 'rb').read())
+    })
+    setattr(request, 'POST', {
+        'key': 'subdir/text.txt'
+    })
+    response = views.fake_s3_upload(request)
+    assert response.status_code == 204
+    assert os.path.isfile(
+        os.path.join(settings.MEDIA_ROOT, 's3/uploads/subdir', 'text.txt'))

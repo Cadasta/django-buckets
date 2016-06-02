@@ -15,7 +15,7 @@
         else uploads--;
 
         var form = getParentByTagName(el, 'form');
-        var submitBtn = form.querySelector('[type="submit"');
+        var submitBtn = form.querySelector('[type="submit"]');
 
         submitBtn.disabled = (uploads > 0);
     }
@@ -64,6 +64,7 @@
 
         req.onload = function() {
             disableSubmit(el, false)
+            console.log(req)
             callback(req.status, req.responseText);
         }
 
@@ -86,16 +87,17 @@
             formData.append(key, data.fields[key])
         })
         formData.append('file', file);
+        console.log(data)
                 
         request('POST', url, formData, headers, el, function(status, xml) {
             if (status !== 204) {
                 error(el, 'Not able to upload file')
             } else {
-                var fileUrl = data.url + '/';
-                if (el.getAttribute('data-upload-to')) {
-                    fileUrl += el.getAttribute('data-upload-to') + '/';
-                }
-                fileUrl += file.name;
+                var fileUrl = data.url + '/' + data.fields.key;
+                // if (el.getAttribute('data-upload-to')) {
+                //     fileUrl += el.getAttribute('data-upload-to') + '/';
+                // }
+                // fileUrl += file.name;
 
                 update(el, fileUrl);
             }

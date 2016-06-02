@@ -4,8 +4,9 @@ from django.core.files.storage import Storage
 
 import boto3
 from botocore.client import Config
+from botocore.exceptions import ClientError
 
-from .utils import validate_settings
+from .utils import validate_settings, random_id
 
 
 class S3Storage(Storage):
@@ -49,18 +50,36 @@ class S3Storage(Storage):
 
         return 'https://s3.amazonaws.com/{}/{}'.format(self.bucket_name, name)
 
-    def get_available_name(self, name, max_length=None):
-        return name
-
-    def get_valid_name(self, name):
-        return name
+    def exists(self, name):
+        s3 = self.get_boto_ressource()
+        try:
+            s3.Object(self.bucket_name, name).load()
+        except ClientError as e:
+            if e.response['Error']['Code'] == "404":
+                return False
+            else:
+                raise e
+        else:
+            return True
 
     def get_signed_url(self, key=None):
+        dir = ''
+        if '/' in key:
+            dir = key[:key.rfind('/') + 1]
+
+        ext = key[key.rfind('.'):]
+        s3_key = ''
+
+        while not s3_key:
+            temp_key = dir + random_id() + ext
+
+            if not self.exists(temp_key):
+                s3_key = temp_key
+
         params = {
             'Bucket': self.bucket_name,
-            'Key': key
+            'Key': s3_key
         }
-
         client = boto3.client(
             's3',
             aws_access_key_id=self.access_key,
