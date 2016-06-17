@@ -43,7 +43,7 @@ class S3File(object):
         if not self.committed:
             name = os.path.join(self.field.upload_to,
                                 os.path.basename(self._file.name))
-            self.url = self.storage.save(name, self._file)
+            self.url = self.storage.save(name, self._file.read())
             self.committed = True
 
         return self.url

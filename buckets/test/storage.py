@@ -22,7 +22,7 @@ class FakeS3Storage(object):
         url = '/media/s3/uploads/' + name
 
         with open(os.path.join(self.dir, 'uploads', name), 'wb') as dest:
-            dest.write(content.read())
+            dest.write(content)
 
         return url
 

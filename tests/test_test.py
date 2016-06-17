@@ -32,9 +32,7 @@ def test_open(make_dirs):  # noqa
 def test_save(make_dirs):  # noqa
     file = create_file()
     store = FakeS3Storage()
-    url = store.save(
-        'text.txt',
-        SimpleUploadedFile('text.txt', open(file.name, 'rb').read()))
+    url = store.save('text.txt', open(file.name, 'rb').read())
 
     assert url == '/media/s3/uploads/text.txt'
     assert os.path.isfile(
@@ -59,6 +57,14 @@ def test_get_signed_url():
     signed = store.get_signed_url(key='file.txt')
     assert '/media/s3/uploads' == signed['url']
     assert 'file.txt' == signed['fields']['key']
+
+
+def test_content_via_save(make_dirs):  # noqa
+    store = FakeS3Storage()
+    txt = 'blah'
+    content = str.encode(txt)
+    url = store.save('blah.txt', content)
+    assert url == '/media/s3/uploads/blah.txt'
 
 
 #############################################################################

@@ -4,6 +4,3 @@ from buckets.fields import S3FileField
 
 class FileModel(models.Model):
     s3_file = S3FileField()
-
-    # class Meta:
-    #     app_label = 'example.exampleapp'
