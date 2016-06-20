@@ -87,7 +87,7 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django :: 1.9',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: AGPL',
         'Operating System :: OS Independent',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.5',
