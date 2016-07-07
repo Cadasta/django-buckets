@@ -79,7 +79,7 @@ setup(
     packages=get_packages(package),
     package_data=get_package_data(package),
     install_requires=[
-        'Django==1.9.6',
+        'Django>=1.8,<1.10',
         'django-audit-log==0.7.0',
         'boto3==1.3.0'
     ],
