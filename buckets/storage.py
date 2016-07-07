@@ -28,9 +28,8 @@ class S3Storage(Storage):
     def _open(self, name, mode='rb'):
         s3 = self.get_boto_ressource()
         f = s3.Object(self.bucket_name, name).get()
-        write_path = os.path.join(settings.MEDIA_ROOT,
-                                  's3/downloads',
-                                  name.split('/')[-1])
+        name = name.split('/')[-1]
+        write_path = os.path.join(settings.MEDIA_ROOT, 's3/downloads', name)
 
         with open(write_path, 'wb') as w:
             to_read = True
