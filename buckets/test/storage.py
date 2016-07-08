@@ -10,7 +10,7 @@ class FakeS3Storage(object):
 
     def open(self, url):
         name = os.path.basename(urllib.request.url2pathname(url))
-        uploaded = os.path.join(self.dir, 'uploads', name)
+        uploaded = os.path.join(self.dir, url)
 
         with open(os.path.join(self.dir, 'downloads', name), 'wb') as dest:
             dest.write(open(uploaded, 'rb').read())
