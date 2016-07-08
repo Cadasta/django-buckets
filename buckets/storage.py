@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
 from django.core.files.storage import Storage
+from django.core.files import File
 
 import boto3
 from botocore.client import Config
@@ -30,8 +31,8 @@ class S3Storage(Storage):
     def _open(self, name, mode='rb'):
         s3 = self.get_boto_ressource()
         f = s3.Object(self.bucket_name, name).get()
-        name = name.split('/')[-1]
-        write_path = os.path.join(settings.MEDIA_ROOT, 's3/downloads', name)
+        write_path = os.path.join(settings.MEDIA_ROOT, 's3/downloads',
+                                  name.split('/')[-1])
 
         with open(write_path, 'wb') as w:
             to_read = True
@@ -47,9 +48,12 @@ class S3Storage(Storage):
 
     def _save(self, name, content):
         s3 = self.get_boto_ressource()
+        if isinstance(content, File):
+            content = content.file
         s3.Object(self.bucket_name, name).put(Body=content)
 
-        return 'https://s3.amazonaws.com/{}/{}'.format(self.bucket_name, name)
+        return 'https://s3-{}.amazonaws.com/{}/{}'.format(
+            self.region, self.bucket_name, name)
 
     def exists(self, name):
         s3 = self.get_boto_ressource()
