@@ -94,11 +94,6 @@
                 error(el, 'Not able to upload file')
             } else {
                 var fileUrl = data.url + '/' + data.fields.key;
-                // if (el.getAttribute('data-upload-to')) {
-                //     fileUrl += el.getAttribute('data-upload-to') + '/';
-                // }
-                // fileUrl += file.name;
-
                 update(el, fileUrl);
             }
         });

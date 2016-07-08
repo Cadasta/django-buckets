@@ -18,7 +18,9 @@ class S3File(object):
 
     def _get_file(self):
         if not hasattr(self, '_file') or not self._file:
-            name = self.field.upload_to + '/' + self.url.split('/')[-1]
+            name = self.url.split('/')[-1]
+            if self.field.upload_to:
+                name = self.field.upload_to + '/' + name
             path = self.storage.open(name)
             self._file = open(path, 'rb')
         return self._file
