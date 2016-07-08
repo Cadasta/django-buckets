@@ -23,7 +23,7 @@ def test_open(make_dirs):  # noqa
         dest_file.write(open(file.name, 'rb').read())
 
     store = FakeS3Storage()
-    downloaded = store.open('uploads/text.txt')
+    downloaded = store.open('text.txt')
     assert open(downloaded, 'rb').read().decode() == 'Some content'
     assert os.path.isfile(
         os.path.join(settings.MEDIA_ROOT, 's3', 'uploads', 'text.txt'))
