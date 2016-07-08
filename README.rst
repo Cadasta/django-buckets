@@ -51,6 +51,7 @@ key and secret key.
     'BUCKET': 'some-bucket',
     'ACCESS_KEY': 'J36RZO0MO9JQ6NWAOY2I',
     'SECRET_KEY': 'EaANd90ZdgiykkXEf67fNRnhc96zcGnkgDhagj6v',
+    'REGION': 'us-east-1'
   }
 
 Include django-buckets' URLs. This will add an `API endpoint <#api>`_, which is

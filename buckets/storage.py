@@ -15,6 +15,7 @@ class S3Storage(Storage):
 
         self.access_key = settings.AWS['ACCESS_KEY']
         self.secret_key = settings.AWS['SECRET_KEY']
+        self.region = settings.AWS['REGION']
         self.bucket_name = settings.AWS['BUCKET']
 
     def get_boto_ressource(self):
@@ -22,6 +23,7 @@ class S3Storage(Storage):
             's3',
             aws_access_key_id=self.access_key,
             aws_secret_access_key=self.secret_key,
+            region_name=self.region,
             config=Config(signature_version='s3v4')
         )
 
@@ -83,6 +85,7 @@ class S3Storage(Storage):
             's3',
             aws_access_key_id=self.access_key,
             aws_secret_access_key=self.secret_key,
+            region_name=self.region,
             config=Config(signature_version='s3v4')
         )
 

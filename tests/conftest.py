@@ -40,6 +40,7 @@ def pytest_configure():
             'BUCKET': os.environ.get('AWS_BUCKET'),
             'ACCESS_KEY': os.environ.get('AWS_ACCESS_KEY'),
             'SECRET_KEY': os.environ.get('AWS_SECRET_KEY'),
+            'REGION': os.environ.get('AWS_REGION'),
         },
         ROOT_URLCONF='buckets.test.urls',
         MEDIA_ROOT=os.path.join(os.path.dirname(BASE_DIR), 'files'),
