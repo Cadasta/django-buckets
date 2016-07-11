@@ -6,7 +6,8 @@ from django.utils.safestring import mark_safe
 class S3FileUploadWidget(widgets.TextInput):
     default_html = (
         '<div class="s3-buckets {uploaded_class}"'
-        '     data-upload-to="{upload_to}">'
+        '     data-upload-to="{upload_to}"'
+        '     data-accepted-types="{accepted_types}">'
         '   <div class="file-links">'
         '       <a class="file-link" href="{file_url}">{file_name}</a>'
         '       <a class="file-remove" href="#">(Remove)</a>'
@@ -27,9 +28,10 @@ class S3FileUploadWidget(widgets.TextInput):
             )
         }
 
-    def __init__(self, upload_to='', *args, **kwargs):
+    def __init__(self, upload_to='', accepted_types=[], *args, **kwargs):
         self.html = kwargs.pop('html', self.default_html)
         self.upload_to = upload_to
+        self.accepted_types = accepted_types
 
         super(S3FileUploadWidget, self).__init__(*args, **kwargs)
 
@@ -45,7 +47,8 @@ class S3FileUploadWidget(widgets.TextInput):
             element_id=self.build_attrs(attrs).get('id'),
             file_name=basename(file_url) if file_url else '',
             uploaded_class=('uploaded' if value else ''),
-            upload_to=self.upload_to
+            upload_to=self.upload_to,
+            accepted_types=','.join(self.accepted_types)
         )
 
         return mark_safe(output)

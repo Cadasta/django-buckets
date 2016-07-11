@@ -5,7 +5,8 @@ from buckets.fields import S3File, S3FileField
 def test_render_empty():
     expected = (
         '<div class="s3-buckets "'
-        '     data-upload-to="">'
+        '     data-upload-to=""'
+        '     data-accepted-types="">'
         '   <div class="file-links">'
         '       <a class="file-link" href=""></a>'
         '       <a class="file-remove" href="#">(Remove)</a>'
@@ -20,6 +21,7 @@ def test_render_empty():
 
     widget = S3FileUploadWidget()
     actual = widget.render('file', None)
+    print(actual)
 
     assert actual == expected
 
@@ -28,7 +30,8 @@ def test_render_value():
     file = S3File('/someurl/text.txt', S3FileField())
     expected = (
         '<div class="s3-buckets uploaded"'
-        '     data-upload-to="test">'
+        '     data-upload-to="test"'
+        '     data-accepted-types="">'
         '   <div class="file-links">'
         '       <a class="file-link" href="{value}">{file_name}</a>'
         '       <a class="file-remove" href="#">(Remove)</a>'
@@ -52,7 +55,8 @@ def test_render_value():
 def test_render_value_from_string():
     expected = (
         '<div class="s3-buckets uploaded"'
-        '     data-upload-to="test">'
+        '     data-upload-to="test"'
+        '     data-accepted-types="">'
         '   <div class="file-links">'
         '       <a class="file-link" href="{value}">{file_name}</a>'
         '       <a class="file-remove" href="#">(Remove)</a>'

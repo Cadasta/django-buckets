@@ -64,7 +64,6 @@
 
         req.onload = function() {
             disableSubmit(el, false)
-            console.log(req)
             callback(req.status, req.responseText);
         }
 
@@ -87,7 +86,6 @@
             formData.append(key, data.fields[key])
         })
         formData.append('file', file);
-        console.log(data)
                 
         request('POST', url, formData, headers, el, function(status, xml) {
             if (status !== 204) {
@@ -106,8 +104,6 @@
             headers  = {'X-CSRFToken': getCookie('csrftoken')},
             url = '/s3/signed-url/';
 
-        disableSubmit(el, true);
-
         var key = file.name;
         if (el.getAttribute('data-upload-to')) {
             key = el.getAttribute('data-upload-to') + '/' + key;
@@ -124,6 +120,20 @@
         });
     }
 
+    function checkType(e) {
+        var el = e.target.parentElement,
+            file = el.querySelector('.file-input').files[0],
+            accepted = el.getAttribute('data-accepted-types').split(',');
+
+        disableSubmit(el, true);
+
+        if (accepted.indexOf(file.type) !== -1) {
+            getSignedUrl(e);
+        } else {
+            error(el, 'File type not allowed.')
+        }
+    }
+
     function removeFile(e) {
         e.preventDefault();
 
@@ -137,7 +147,7 @@
         var input = el.querySelector('.file-input'),
             remove = el.querySelector('.file-remove');
 
-        input.addEventListener('change', getSignedUrl, false);
+        input.addEventListener('change', checkType, false);
         remove.addEventListener('click', removeFile, false);
     }
 
