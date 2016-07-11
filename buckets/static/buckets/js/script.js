@@ -130,7 +130,8 @@
         if (accepted.indexOf(file.type) !== -1) {
             getSignedUrl(e);
         } else {
-            error(el, 'File type not allowed.')
+            error(el, 'File type not allowed.');
+            disableSubmit(el, false);
         }
     }
 
