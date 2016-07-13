@@ -20,7 +20,18 @@
         submitBtn.disabled = (uploads > 0);
     }
 
+    function message(el, msg) {
+        if (msgP = el.querySelector('.message')) { msgP.remove(); }
+        if (msg) {
+            var msgP = document.createElement('p');
+            msgP.setAttribute('class', 'help-block message');
+            msgP.appendChild(document.createTextNode(msg));
+            el.insertBefore(msgP, el.firstChild);
+        }
+    }
+
     function error(el, msg) {
+        message(el);
         el.querySelector('.file-url').value = '';
         el.querySelector('.file-input').value = '';
 
@@ -46,6 +57,8 @@
         link.innerHTML = fileUrl.split('/').pop();
 
         el.classList.add('uploaded');
+        disableSubmit(el, false);
+        message(el);
     }
 
     function getCookie(name) {
@@ -63,7 +76,6 @@
         });
 
         req.onload = function() {
-            disableSubmit(el, false)
             callback(req.status, req.responseText);
         }
 
@@ -129,6 +141,7 @@
 
         if (accepted.indexOf(file.type) !== -1) {
             getSignedUrl(e);
+            message(el, 'Uploading...');
         } else {
             error(el, 'File type not allowed.');
             disableSubmit(el, false);
