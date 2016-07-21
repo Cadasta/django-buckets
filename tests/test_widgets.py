@@ -5,8 +5,7 @@ from buckets.fields import S3File, S3FileField
 def test_render_empty():
     expected = (
         '<div class="s3-buckets "'
-        '     data-upload-to=""'
-        '     data-accepted-types="">'
+        '     data-upload-to="" >'
         '   <div class="file-links">'
         '       <a class="file-link" href=""></a>'
         '       <a class="file-remove" href="#">(Remove)</a>'
@@ -21,7 +20,6 @@ def test_render_empty():
 
     widget = S3FileUploadWidget()
     actual = widget.render('file', None)
-    print(actual)
 
     assert actual == expected
 
@@ -30,8 +28,7 @@ def test_render_value():
     file = S3File('/someurl/text.txt', S3FileField())
     expected = (
         '<div class="s3-buckets uploaded"'
-        '     data-upload-to="test"'
-        '     data-accepted-types="">'
+        '     data-upload-to="test" >'
         '   <div class="file-links">'
         '       <a class="file-link" href="{value}">{file_name}</a>'
         '       <a class="file-remove" href="#">(Remove)</a>'
@@ -55,8 +52,7 @@ def test_render_value():
 def test_render_value_from_string():
     expected = (
         '<div class="s3-buckets uploaded"'
-        '     data-upload-to="test"'
-        '     data-accepted-types="">'
+        '     data-upload-to="test" >'
         '   <div class="file-links">'
         '       <a class="file-link" href="{value}">{file_name}</a>'
         '       <a class="file-remove" href="#">(Remove)</a>'
@@ -73,5 +69,28 @@ def test_render_value_from_string():
 
     widget = S3FileUploadWidget(upload_to='test')
     actual = widget.render('file', '/someurl/text.txt')
+
+    assert actual == expected
+
+
+def test_render_acctepted_type():
+    expected = (
+        '<div class="s3-buckets "'
+        '     data-upload-to="" {accepted_types}>'
+        '   <div class="file-links">'
+        '       <a class="file-link" href=""></a>'
+        '       <a class="file-remove" href="#">(Remove)</a>'
+        '   </div>'
+        '   <input class="file-url" type="hidden" value=""'
+        '          id="None" name="{name}" />'
+        '   <input class="file-input" type="file" />'
+        '</div>'.format(
+            name='file',
+            accepted_types='data-accepted-types="image/gif,image/png"'
+        )
+    )
+
+    widget = S3FileUploadWidget(accepted_types=['image/gif', 'image/png'])
+    actual = widget.render('file', None)
 
     assert actual == expected

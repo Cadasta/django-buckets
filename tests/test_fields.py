@@ -156,6 +156,14 @@ def test_formfield():
     assert isinstance(form_field.widget, S3FileUploadWidget)
 
 
+def test_formfield_with_kwargs():
+    field = S3FileField(upload_to='test', accepted_types=['image/png'])
+    form_field = field.formfield()
+    assert isinstance(form_field.widget, S3FileUploadWidget)
+    assert form_field.widget.upload_to == 'test'
+    assert form_field.widget.accepted_types == ['image/png']
+
+
 @pytest.mark.django_db
 def test_save_with_url():
     m = FileModel.objects.create(s3_file='http://example.com')

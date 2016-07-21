@@ -79,10 +79,11 @@ class S3FileField(models.Field):
 
     description = _("A file stored in an AWS S3 buckets.")
 
-    def __init__(self, upload_to='', storage=None, *args, **kwargs):
+    def __init__(self, upload_to='', storage=None, accepted_types=None,
+                 *args, **kwargs):
         self.storage = storage or default_storage
         self.upload_to = upload_to
-        self.widget = S3FileUploadWidget(upload_to=upload_to)
+        self.accepted_types = accepted_types
 
         kwargs['max_length'] = kwargs.get('max_length', 200)
         super(S3FileField, self).__init__(*args, **kwargs)
@@ -130,5 +131,8 @@ class S3FileField(models.Field):
         return file.url
 
     def formfield(self, *args, **kwargs):
-        kwargs['widget'] = self.widget
-        return super(S3FileField, self).formfield(*args, **kwargs)
+        widget = S3FileUploadWidget(upload_to=self.upload_to,
+                                    accepted_types=self.accepted_types)
+        defaults = {'widget': widget}
+        defaults.update(kwargs)
+        return super(S3FileField, self).formfield(**defaults)

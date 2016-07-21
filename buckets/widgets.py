@@ -6,8 +6,7 @@ from django.utils.safestring import mark_safe
 class S3FileUploadWidget(widgets.TextInput):
     default_html = (
         '<div class="s3-buckets {uploaded_class}"'
-        '     data-upload-to="{upload_to}"'
-        '     data-accepted-types="{accepted_types}">'
+        '     data-upload-to="{upload_to}" {accepted_types}>'
         '   <div class="file-links">'
         '       <a class="file-link" href="{file_url}">{file_name}</a>'
         '       <a class="file-remove" href="#">(Remove)</a>'
@@ -28,7 +27,7 @@ class S3FileUploadWidget(widgets.TextInput):
             )
         }
 
-    def __init__(self, upload_to='', accepted_types=[], *args, **kwargs):
+    def __init__(self, upload_to='', accepted_types=None, *args, **kwargs):
         self.html = kwargs.pop('html', self.default_html)
         self.upload_to = upload_to
         self.accepted_types = accepted_types
@@ -41,6 +40,12 @@ class S3FileUploadWidget(widgets.TextInput):
         else:
             file_url = value.url if value else ''
 
+        accepted_types = ''
+        if self.accepted_types:
+            accepted_types = 'data-accepted-types="{}"'.format(
+                ','.join(self.accepted_types)
+            )
+
         output = self.html.format(
             name=name,
             file_url=file_url,
@@ -48,7 +53,7 @@ class S3FileUploadWidget(widgets.TextInput):
             file_name=basename(file_url) if file_url else '',
             uploaded_class=('uploaded' if value else ''),
             upload_to=self.upload_to,
-            accepted_types=','.join(self.accepted_types)
+            accepted_types=accepted_types
         )
 
         return mark_safe(output)
