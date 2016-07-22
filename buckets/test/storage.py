@@ -2,7 +2,7 @@ import os
 import urllib
 
 from django.conf import settings
-from buckets.utils import ensure_dirs
+from buckets.utils import ensure_dirs, random_id
 
 
 class FakeS3Storage(object):
@@ -34,5 +34,22 @@ class FakeS3Storage(object):
         uploaded = os.path.join(self.dir, 'uploads', name)
         os.remove(uploaded)
 
+    def exists(self, key):
+        path = os.path.join(self.dir, 'uploads', key)
+        return os.path.exists(path)
+
     def get_signed_url(self, key=None):
-        return {'url': '/media/s3/uploads', 'fields': {'key': key}}
+        dir = ''
+        if '/' in key:
+            dir = key[:key.rfind('/') + 1]
+
+        ext = key[key.rfind('.'):]
+        s3_key = ''
+
+        while not s3_key:
+            temp_key = dir + random_id() + ext
+
+            if not self.exists(temp_key):
+                s3_key = temp_key
+
+        return {'url': '/media/s3/uploads', 'fields': {'key': s3_key}}
