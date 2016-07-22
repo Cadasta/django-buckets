@@ -1,3 +1,4 @@
+import os
 import string
 import random
 from django.conf import settings
@@ -38,3 +39,10 @@ def random_id():
     rand_id = [random.randint(0, 0xFF) for i in range(ID_FIELD_LENGTH)]
     return (byte_to_letter(rand_id[0]) +
             ''.join(map(byte_to_base32_chr, rand_id[1:])))
+
+
+def ensure_dirs(*args):
+    for dir in args:
+        path = os.path.join(settings.MEDIA_ROOT, 's3', dir)
+        if not os.path.exists(path):
+            os.makedirs(path)

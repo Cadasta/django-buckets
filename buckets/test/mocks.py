@@ -4,12 +4,12 @@ import os
 
 from django.conf import settings
 
-from .utils import ensure_dirs
+from buckets.utils import ensure_dirs
 
 
 @pytest.fixture(scope='function')
 def make_dirs(request):
-    ensure_dirs()
+    ensure_dirs('uploads', 'downloads', 'uploads/files')
 
     def teardown():
         shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 's3'))

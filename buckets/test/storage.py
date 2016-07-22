@@ -2,11 +2,14 @@ import os
 import urllib
 
 from django.conf import settings
+from buckets.utils import ensure_dirs
 
 
 class FakeS3Storage(object):
     def __init__(self, dir=None):
         self.dir = dir or os.path.join(settings.MEDIA_ROOT, 's3')
+
+        ensure_dirs('downloads', 'uploads')
 
     def open(self, url):
         name = os.path.basename(urllib.request.url2pathname(url))

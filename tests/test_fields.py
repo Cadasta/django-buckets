@@ -7,7 +7,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from buckets.fields import S3File, S3FileField
 from buckets.widgets import S3FileUploadWidget
 from buckets.test.mocks import create_file, make_dirs  # noqa
-from buckets.test.utils import ensure_dirs
 from buckets.test.storage import FakeS3Storage
 from .models import FileModel
 
@@ -28,7 +27,6 @@ def test_init():
 
 
 def test_get_file(make_dirs):  # noqa
-    ensure_dirs(add='s3/uploads/files')
     file = create_file()
     with open(os.path.join(settings.MEDIA_ROOT,
               's3/uploads/files/text.txt'), 'wb') as dest_file:
