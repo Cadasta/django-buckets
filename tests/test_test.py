@@ -56,7 +56,7 @@ def test_get_signed_url():
 
     signed = store.get_signed_url(key='file.txt')
     assert '/media/s3/uploads' == signed['url']
-    assert 'file.txt' == signed['fields']['key']
+    assert len(signed['fields']['key']) == 28
 
 
 def test_content_via_save(make_dirs):  # noqa

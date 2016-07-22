@@ -10,7 +10,7 @@ files in Django and a form widget that handles uploading files to S3 using
 `pre-signed URLs <http://docs.aws.amazon.com/AmazonS3/latest/dev/PresignedUrlUploadObject.html>`_.
 
 For testing and development, django-buckets offers :code:`S3FakeStorage` and
-the API endpoint :code:`/media/s3/uploads`, which mimick the behaviour of
+the API endpoint :code:`/media/s3/uploads`, which mimics the behavior of
 :code:`S3Storage` and AWS S3's file upload API but use the local file system. 
 Both integrate seamlessly with :code:`S3FileField`.
 
@@ -34,9 +34,10 @@ Installation
 For production
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In settings, add :code:`buckets` to installed apps, set :code:`S3Storage` as 
-default default storage and add the S3 bucket name as well as the AWS access 
-key and secret key.
+In settings, add :code:`buckets` to installed apps and set :code:`S3Storage` 
+as default storage. Configure the :code:`AWS` settings by providing the S3 
+bucket name AWS access key and secret key and the AWS region where your 
+bucket is located.
 
 .. code-block:: python
 
@@ -54,7 +55,7 @@ key and secret key.
     'REGION': 'us-east-1'
   }
 
-Include django-buckets' URLs. This will add an `API endpoint <#api>`_, which is
+Include django-buckets' URLs to add an `API endpoint <#api>`_, which is
 used by the form widget or REST-clients to request valid signed URLs.
 
 .. code-block:: python
@@ -63,7 +64,7 @@ used by the form widget or REST-clients to request valid signed URLs.
       url(r'', include('buckets.urls')),
   ]
 
-Edit the CORS's policy of the S3 bucket you intend to use to allow for POST
+Edit the CORS policy of the S3 bucket you intend to use to allow for POST
 requests:
 
 .. code-block:: xml
@@ -81,17 +82,18 @@ requests:
 For testing and development
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In settings, In settings, add :code:`buckets` to installed apps and set
-:code:`S3Storage` as default default storage.
+In settings, add :code:`buckets` to installed apps and set
+:code:`FakeS3Storage` as default default storage.
 
 .. code-block:: python
 
  DEFAULT_FILE_STORAGE = 'buckets.test.storage.FakeS3Storage'
 
-Include django-buckets' URLs. This will add an `API endpoint <#api>`_, which is
+Include django-buckets' URLs to add an `API endpoint <#api>`_, which is
 used by the form widget or REST-clients to request valid signed URLs. Further,
 it will add a file upload endpoint, which behaves like S3's file upload but
-stores files on the local file system.
+stores files on the local file system, so you don't need to configure an S3 
+bucket for development. 
 
 .. code-block:: python
 
@@ -107,11 +109,17 @@ stores files on the local file system.
 Usage
 -------------------------------------------------------------------------------
 
-Create a model class, which has a :code:`S3FileField`. Internally, S3FileField
+Create a model with an :code:`S3FileField`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create a model class, which has an :code:`S3FileField`. Internally, S3FileField
 is a Django `CharField <https://docs.djangoproject.com/en/1.9/ref/models/fields/#charfield>`_
-and it accepts the same arguments. In addition, you can provide a value for 
-:code:`upload_to` to set an upload directory (just like
-`FileField <https://docs.djangoproject.com/en/1.9/ref/models/fields/#filefield>`_).
+and it accepts the same arguments. 
+
+:code:`S3FileField` accepts two additional optional arguments:
+
+- :code:`upload_to` defines an upload directory, where uploaded files should are (similar to `FileField <https://docs.djangoproject.com/en/1.9/ref/models/fields/#filefield>`_)
+- :code:`accepted_types` defines a list mime types that are accepted to upload. If you do not provide this argument, all types will be accepted. 
 
 .. code-block:: python
 
@@ -120,17 +128,24 @@ and it accepts the same arguments. In addition, you can provide a value for
 
   class MyModel(models.Model):
       name = models.CharField(max_length=200)
-      file = S3FileField()
+      file = S3FileField(upload_to='some-dir',
+                         accepted_types=['image/png', image/jpeg])
 
 
-Instanciate the model with an S3 URL:
+Instanciate the model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+An :code:`S3FileField` accepts an URL as its value:
 
 .. code-block:: python
 
   file_model = MyModel.objects.create(
       name='My File',
-      file='https://s3.amazonaws.com/some-bucket/...'
+      file='https://s3.amazonaws.com/some-bucket/file.txt'
   )
+
+Reading and writing the file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Internally, an instance of :code:`S3File` is created from the URL that provides
 access to the file itself. 
@@ -138,13 +153,20 @@ access to the file itself.
 .. code-block:: python
 
   # downloads the file and returns a File object
-  file = file_model.file 
+  file = file_model.file.open()
 
   # assign an updated file
   file_model.file = file
 
-To use the form widget provided by :code:`S3FileField`, add the JavaScript and
-CSS to the template's head.
+Usage with Django forms
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+django-buckets comes with a form widget that takes care of uploading files,
+displaying links to files and filling the form fields. It's the easiest way to
+use django-buckets in your application. 
+
+To use the widget, make sure the widget's media files (some JS and CSS) are
+added to the template, ideally somewhere in the page's :code:`head`:
 
 .. code-block:: html
 
@@ -154,10 +176,40 @@ CSS to the template's head.
       <title>django-buckets File Upload</title>
       {{ form.media }}
     </head>
+    ...
+  </html>
+
+You can use Django's standard form rendering methods and the necessary HTML 
+elements are added to the page:
+
+.. code-block:: html
+
+  <html>
+    ...
     <body>
       {{ form.as_p }}
     </body>
   </html>
+
+
+Use a custom widget
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you plan to use a custom widget in your forms, you can add a Django 
+:code:`CharField` to your form and provide the widget you want to use:
+
+.. code-block:: python
+
+  from django import forms
+  from .models import MyModel
+
+  class MyModelForm(forms.ModelForm):
+      file = forms.CharField(widget=MyWidget)
+
+      class Meta:
+          model = MyModel
+          fields = ['name', 'file']
+
 
 
 API

@@ -7,7 +7,7 @@ import boto3
 from botocore.client import Config
 from botocore.exceptions import ClientError
 
-from .utils import validate_settings, random_id
+from .utils import validate_settings, random_id, ensure_dirs
 
 
 class S3Storage(Storage):
@@ -18,6 +18,8 @@ class S3Storage(Storage):
         self.secret_key = settings.AWS['SECRET_KEY']
         self.region = settings.AWS['REGION']
         self.bucket_name = settings.AWS['BUCKET']
+
+        ensure_dirs('downloads')
 
     def get_boto_ressource(self):
         return boto3.resource(

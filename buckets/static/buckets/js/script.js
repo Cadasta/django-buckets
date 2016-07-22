@@ -135,11 +135,11 @@
     function checkType(e) {
         var el = e.target.parentElement,
             file = el.querySelector('.file-input').files[0],
-            accepted = el.getAttribute('data-accepted-types').split(',');
+            accepted = el.getAttribute('data-accepted-types');
 
         disableSubmit(el, true);
 
-        if (accepted.indexOf(file.type) !== -1) {
+        if (!accepted || accepted.split(',').indexOf(file.type) !== -1) {
             getSignedUrl(e);
             message(el, 'Uploading...');
         } else {

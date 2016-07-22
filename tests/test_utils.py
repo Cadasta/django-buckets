@@ -1,4 +1,7 @@
+import os
 import pytest
+import shutil
+from django.conf import settings
 from buckets import utils
 
 
@@ -31,3 +34,12 @@ def test_validate_settings(settings):
     with pytest.raises(AssertionError) as e:
         utils.validate_settings()
     assert 'AWS access key is not set in settings' in str(e.value)
+
+
+def test_ensure_dirs():
+    utils.ensure_dirs('blah', 'blub')
+    assert os.path.exists(os.path.join(settings.MEDIA_ROOT, 's3', 'blah'))
+    assert os.path.exists(os.path.join(settings.MEDIA_ROOT, 's3', 'blub'))
+
+    # Removed directories created
+    shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 's3'))
