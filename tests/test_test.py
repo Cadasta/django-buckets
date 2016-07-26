@@ -39,6 +39,16 @@ def test_save(make_dirs):  # noqa
         os.path.join(settings.MEDIA_ROOT, 's3', 'uploads', 'text.txt'))
 
 
+def test_save_with_subdir(make_dirs):  # noqa
+    file = create_file()
+    store = FakeS3Storage()
+    url = store.save('somedir/text.txt', open(file.name, 'rb').read())
+
+    assert url == '/media/s3/uploads/somedir/text.txt'
+    assert os.path.isfile(
+        os.path.join(settings.MEDIA_ROOT, 's3/uploads/somedir/text.txt'))
+
+
 def test_delete(make_dirs):  # noqa
     file = create_file()
     with open(os.path.join(settings.MEDIA_ROOT,

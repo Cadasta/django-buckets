@@ -24,6 +24,12 @@ class FakeS3Storage(object):
     def save(self, name, content):
         url = '/media/s3/uploads/' + name
 
+        if '/' in name:
+            path = os.path.join(settings.MEDIA_ROOT,
+                                's3/uploads', name[:name.rfind('/')])
+            if not os.path.exists(path):
+                os.makedirs(path)
+
         with open(os.path.join(self.dir, 'uploads', name), 'wb') as dest:
             dest.write(content)
 
