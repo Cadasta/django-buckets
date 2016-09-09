@@ -1,4 +1,7 @@
 (function () {
+    var link_update = document.createEvent('Event');
+    link_update.initEvent('link:update', true, true);
+
     function getParentByTagName(el, tagName) {
         var p = el.parentElement;
 
@@ -55,6 +58,7 @@
         url.value = fileUrl;
         link.href = fileUrl;
         link.innerHTML = fileUrl.split('/').pop();
+        link.dispatchEvent(link_update);
 
         el.classList.add('uploaded');
         disableSubmit(el, false);
