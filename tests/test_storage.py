@@ -1,10 +1,12 @@
-from django.conf import settings
-
+import pytest
 import boto3
 from botocore.client import Config
+from botocore.exceptions import ClientError
+from django.conf import settings
 
 from buckets.storage import S3Storage
 from buckets.test.mocks import create_file, make_dirs  # noqa
+from buckets.exceptions import S3ResourceNotFound
 
 
 def get_boto_resource(storage):
@@ -59,3 +61,21 @@ def test_upload_file(make_dirs):  # noqa
     s3 = get_boto_resource(storage)
     o = s3.Object(storage.bucket_name, 'test/' + name).get()
     assert("Some content" in o['Body'].read(o['ContentLength']).decode())
+
+
+def test_delete_file(make_dirs):  # noqa
+    storage = S3Storage()
+    s3 = get_boto_resource(storage)
+    s3.Object(storage.bucket_name, 'test/delete.txt').put(Body=b'content')
+
+    storage.delete('test/delete.txt')
+
+    with pytest.raises(ClientError) as e:
+        s3.Object(storage.bucket_name, 'test/delete.txt').load()
+        assert e.response['Error']['Code'] == "404"
+
+
+def test_delete_non_exsisting_file():
+    storage = S3Storage()
+    with pytest.raises(S3ResourceNotFound):
+        storage.delete('test/awkward.txt')

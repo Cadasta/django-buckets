@@ -62,9 +62,9 @@ def test_delete_file(make_dirs):  # noqa
               's3', 'uploads', 'text.txt'), 'wb') as dest_file:
         dest_file.write(open(file.name, 'rb').read())
 
-    field = S3FileField(upload_to='uploads', storage=FakeS3Storage())
+    field = S3FileField(storage=FakeS3Storage())
 
-    s3_file = S3File('/media/uploads/text.txt', field)
+    s3_file = S3File('/media/s3/uploads/text.txt', field)
     s3_file.file = dest_file
     s3_file.delete()
 
