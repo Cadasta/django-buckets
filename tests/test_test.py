@@ -1,3 +1,4 @@
+import pytest
 import os
 from django.conf import settings
 from django.core.urlresolvers import reverse, resolve
@@ -7,6 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from buckets.test.mocks import create_file, make_dirs  # noqa
 from buckets.test.storage import FakeS3Storage
 from buckets.test import views
+from buckets.exceptions import S3ResourceNotFound
 
 
 #############################################################################
@@ -52,13 +54,19 @@ def test_save_with_subdir(make_dirs):  # noqa
 def test_delete(make_dirs):  # noqa
     file = create_file()
     with open(os.path.join(settings.MEDIA_ROOT,
-              's3', 'uploads', 'text.txt'), 'wb') as dest_file:
+              's3', 'uploads', 'delete.txt'), 'wb') as dest_file:
         dest_file.write(open(file.name, 'rb').read())
 
     store = FakeS3Storage()
-    store.delete('/media/s3/uploads/text.txt')
+    store.delete('delete.txt')
     assert not os.path.isfile(
         os.path.join(settings.MEDIA_ROOT, 's3,' 'uploads', 'text.txt'))
+
+
+def test_delete_non_exising_file(make_dirs):  # noqa
+    store = FakeS3Storage()
+    with pytest.raises(S3ResourceNotFound):
+        store.delete('/media/s3/uploads/delete.txt')
 
 
 def test_get_signed_url():

@@ -30,7 +30,12 @@ class S3File(object):
         self.committed = False
 
     def _del_file(self):
-        self.storage.delete(self.url)
+        name = self.url.split('/')[-1]
+
+        if self.field.upload_to:
+            name = self.field.upload_to + '/' + name
+
+        self.storage.delete(name)
         if hasattr(self, '_file'):
             del self._file
 

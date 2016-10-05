@@ -1,9 +1,9 @@
 from django.views.decorators.http import require_POST
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.utils.translation import ugettext as _
 from django.core.files.storage import default_storage
 
-from buckets.exceptions import InvalidPayload
+from buckets.exceptions import InvalidPayload, S3ResourceNotFound
 
 
 def validate_payload(payload):
@@ -32,3 +32,13 @@ def signed_url(request):
             status = 400
 
     return JsonResponse(response, status=status)
+
+
+@require_POST
+def delete_resource(request):
+    try:
+        default_storage.delete(request.POST['key'])
+        return HttpResponse('', status=204)
+    except S3ResourceNotFound:
+        return JsonResponse({'error': _("S3 resource does not exist.")},
+                            status=400)

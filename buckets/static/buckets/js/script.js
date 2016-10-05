@@ -156,9 +156,17 @@
         e.preventDefault();
 
         var el = e.target.parentElement.parentElement;
-        el.querySelector('.file-url').value = '';
-        el.querySelector('.file-input').value = '';
-        el.classList.remove('uploaded');
+        var url = el.getAttribute('data-upload-to') + '/' + el.querySelector('.file-link').innerHTML,
+            headers  = { // 'content-type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')},
+            form = new FormData();
+            form.append('key', url);
+
+        request('POST', '/s3/delete-resource/', form, headers, null, function() {
+            el.querySelector('.file-url').value = '';
+            el.querySelector('.file-input').value = '';
+            el.classList.remove('uploaded');
+        });
     }
 
     function addEventHandlers(el) {

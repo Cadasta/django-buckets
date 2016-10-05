@@ -215,11 +215,14 @@ If you plan to use a custom widget in your forms, you can add a Django
 API
 -------------------------------------------------------------------------------
 
+Getting a signed URL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 If you are building an API-only application, you can get a signed URL by
 POSTing :code:`client_method` and :code:`http_method`.
 
 Request
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`````````````
 
 .. code-block::
 
@@ -232,7 +235,7 @@ Request
   }
 
 Response
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`````````````
 
 .. code-block::
 
@@ -296,3 +299,41 @@ response and include all :code:`fields` with the request payload.
     :target: https://travis-ci.org/Cadasta/django-buckets
 .. |pypi-version| image:: https://img.shields.io/pypi/v/django-buckets.svg
     :target: https://pypi.python.org/pypi/django-buckets
+
+
+Deleting a file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Request
+`````````````
+
+.. code-block::
+
+  POST /s3/delete-resource/
+  Accept: application/json
+  Content-Type: application/json
+
+  {
+    "key": "file.txt"
+  }
+
+
+Response
+`````````````
+
+*When the file was deleted successfully:*
+
+.. code-block::
+
+  HTTP/1.1 204 No Content
+
+*When the file was not found:*
+
+.. code-block::
+
+  HTTP/1.1 400 Bad Request
+  Content-Type: application/json
+
+  {
+    "error": "S3 resource does not exist."
+  }
