@@ -156,11 +156,15 @@
         e.preventDefault();
 
         var el = e.target.parentElement.parentElement;
-        var url = el.getAttribute('data-upload-to') + '/' + el.querySelector('.file-link').innerHTML,
-            headers  = { // 'content-type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')},
+        var urlArray = el.querySelector('.file-url').value.split('/'),
+            headers  = { 'X-CSRFToken': getCookie('csrftoken')},
             form = new FormData();
-            form.append('key', url);
+
+        var url = urlArray[urlArray.length - 1];
+        if (el.getAttribute('data-upload-to').length) {
+            url = el.getAttribute('data-upload-to') + '/' + url;
+        }
+        form.append('key', url);
 
         request('POST', '/s3/delete-resource/', form, headers, null, function() {
             el.querySelector('.file-url').value = '';
