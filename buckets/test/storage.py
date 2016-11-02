@@ -37,10 +37,7 @@ class FakeS3Storage(object):
         return url
 
     def delete(self, name):
-        print(name)
-        print(self.dir)
         uploaded = os.path.join(self.dir, 'uploads', name)
-        print(uploaded)
         try:
             os.remove(uploaded)
         except:
