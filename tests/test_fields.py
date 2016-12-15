@@ -4,7 +4,7 @@ import pytest
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from buckets.fields import S3File, S3FileField
+from buckets.fields import S3File, S3FileField, key_from_url
 from buckets.widgets import S3FileUploadWidget
 from buckets.test.mocks import create_file, make_dirs  # noqa
 from buckets.test.storage import FakeS3Storage
@@ -181,6 +181,34 @@ def test_pre_save():
         s3_file='http://example.com'
     )
     field = S3FileField(name='s3_file')
+    field._original_url = 'http://example.com'
     url = field.pre_save(model_instance, False)
 
     assert url == 'http://example.com'
+
+
+@pytest.mark.django_db
+def test_pre_save_delete_file():
+    file = create_file()
+    with open(os.path.join(settings.MEDIA_ROOT,
+              's3/uploads/text.txt'), 'wb') as dest_file:
+        dest_file.write(open(file.name, 'rb').read())
+
+    model_instance = FileModel(s3_file='/media/s3/uploads/text.txt')
+    model_instance.save()
+    model_instance.refresh_from_db()
+
+    field = model_instance.s3_file.field
+    field.storage = FakeS3Storage()
+    model_instance.s3_file = ''
+    url = field.pre_save(model_instance, False)
+    assert url == ''
+    assert not os.path.isfile(os.path.join(settings.MEDIA_ROOT,
+                              's3/uploads/text.txt'))
+
+
+def test_key_from_url():
+    assert (key_from_url('http://example.com/some/dir/file.txt', None) ==
+            'file.txt')
+    assert (key_from_url('http://example.com/some/dir/file.txt', 'some/dir') ==
+            'some/dir/file.txt')

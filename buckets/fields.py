@@ -6,15 +6,24 @@ from django.db import models
 from .widgets import S3FileUploadWidget
 
 
+def key_from_url(url, upload_to):
+    key = url.split('/')[-1]
+
+    if upload_to:
+        key = upload_to + '/' + key
+    return key
+
+
 class S3File(object):
     """ This is the internal value an `S3FileField`. It provides access to the
         actual file on S3, e.g. for post-processing. It usually uses an
         instance of S3Storage to download, upload or delete the file on S3."""
-    def __init__(self, url, field):
+    def __init__(self, url, field, original_url=None):
         self.field = field
         self.storage = field.storage
         self.url = url
         self.committed = True
+        self.original_url = original_url if original_url is not None else url
 
     def _get_file(self):
         if not hasattr(self, '_file') or not self._file:
@@ -30,11 +39,7 @@ class S3File(object):
         self.committed = False
 
     def _del_file(self):
-        name = self.url.split('/')[-1]
-
-        if self.field.upload_to:
-            name = self.field.upload_to + '/' + name
-
+        name = key_from_url(self.url, self.field.upload_to)
         self.storage.delete(name)
         if hasattr(self, '_file'):
             del self._file
@@ -71,7 +76,13 @@ class S3FileDescriptor(object):
         if isinstance(value, S3File):
             instance.__dict__[self.field.name] = value
         else:
-            instance.__dict__[self.field.name] = S3File(value, self.field)
+            o = None
+            f = instance.__dict__.get(self.field.name)
+            if f:
+                o = f.url
+            instance.__dict__[self.field.name] = S3File(value,
+                                                        self.field,
+                                                        original_url=o)
 
 
 class S3FileField(models.Field):
@@ -115,12 +126,11 @@ class S3FileField(models.Field):
         return name, path, args, kwargs
 
     def from_db_value(self, value, expression, connection, context):
-        return S3File(value, self)
+        return S3File(value, self, original_url=value)
 
     def to_python(self, value):
         if value is None or isinstance(value, S3File):
             return value
-
         return S3File(value, self)
 
     def get_prep_value(self, value):
@@ -132,6 +142,10 @@ class S3FileField(models.Field):
     def pre_save(self, model_instance, add):
         file = getattr(model_instance, self.name)
         file.save()
+        if not add and file.original_url and not file.url:
+            key = key_from_url(file.original_url, self.upload_to)
+            self.storage.delete(key)
+            return ''
 
         return file.url
 

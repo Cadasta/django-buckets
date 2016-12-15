@@ -51,7 +51,7 @@ class S3FileUploadWidget(widgets.TextInput):
             file_url=file_url,
             element_id=self.build_attrs(attrs).get('id'),
             file_name=basename(file_url) if file_url else '',
-            uploaded_class=('uploaded' if value else ''),
+            uploaded_class=('uploaded' if file_url else ''),
             upload_to=self.upload_to,
             accepted_types=accepted_types
         )

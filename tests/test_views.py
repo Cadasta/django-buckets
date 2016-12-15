@@ -1,13 +1,10 @@
-import os
 import pytest
 import json
 
-from django.conf import settings
 from django.http import HttpRequest
 from django.core.files.storage import FileSystemStorage
 
 from buckets import views, exceptions
-from buckets.test.storage import FakeS3Storage
 from buckets.test.mocks import create_file, make_dirs  # noqa
 
 
@@ -77,28 +74,3 @@ def test_post_signed_url_with_invalid_payload():
 
     assert response.status_code == 400
     assert 'key' in json.loads(content)
-
-
-def test_delete_resource(make_dirs, monkeypatch):  # noqa
-    monkeypatch.setattr(views, 'default_storage', FakeS3Storage())
-    create_file(subdir='uploads', name='delete.txt')
-
-    request = HttpRequest()
-    setattr(request, 'method', 'POST')
-    setattr(request, 'POST', {'key': 'delete.txt'})
-    response = views.delete_resource(request)
-    assert response.status_code == 204
-    assert not os.path.isfile(
-        os.path.join(settings.MEDIA_ROOT, 's3,' 'uploads', 'delete.txt'))
-
-
-def test_delete_non_existing_resource(make_dirs, monkeypatch):  # noqa
-    monkeypatch.setattr(views, 'default_storage', FakeS3Storage())
-
-    request = HttpRequest()
-    setattr(request, 'method', 'POST')
-    setattr(request, 'POST', {'key': 'delete.txt'})
-    response = views.delete_resource(request)
-    content = json.loads(response.content.decode('utf-8'))
-    assert response.status_code == 400
-    assert content['error'] == 'S3 resource does not exist.'
