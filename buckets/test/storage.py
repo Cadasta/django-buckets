@@ -3,7 +3,6 @@ import urllib
 
 from django.conf import settings
 from buckets.utils import ensure_dirs, random_id
-from buckets.exceptions import S3ResourceNotFound
 
 
 class FakeS3Storage(object):
@@ -40,8 +39,8 @@ class FakeS3Storage(object):
         uploaded = os.path.join(self.dir, 'uploads', name)
         try:
             os.remove(uploaded)
-        except:
-            raise S3ResourceNotFound()
+        except FileNotFoundError:
+            pass
 
     def exists(self, key):
         path = os.path.join(self.dir, 'uploads', key)

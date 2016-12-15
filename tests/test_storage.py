@@ -6,7 +6,6 @@ from django.conf import settings
 
 from buckets.storage import S3Storage
 from buckets.test.mocks import create_file, make_dirs  # noqa
-from buckets.exceptions import S3ResourceNotFound
 
 
 def get_boto_resource(storage):
@@ -77,5 +76,4 @@ def test_delete_file(make_dirs):  # noqa
 
 def test_delete_non_exsisting_file():
     storage = S3Storage()
-    with pytest.raises(S3ResourceNotFound):
-        storage.delete('test/awkward.txt')
+    storage.delete('test/awkward.txt')
