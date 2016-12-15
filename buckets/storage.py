@@ -6,7 +6,6 @@ from django.core.files import File
 import boto3
 from botocore.client import Config
 from botocore.exceptions import ClientError
-from buckets.exceptions import S3ResourceNotFound
 
 from .utils import validate_settings, random_id, ensure_dirs
 
@@ -60,10 +59,7 @@ class S3Storage(Storage):
 
     def delete(self, name):
         s3 = self.get_boto_ressource()
-        if self.exists(name):
-            s3.Object(self.bucket_name, name).delete()
-        else:
-            raise S3ResourceNotFound()
+        s3.Object(self.bucket_name, name).delete()
 
     def exists(self, name):
         s3 = self.get_boto_ressource()
