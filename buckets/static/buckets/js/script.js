@@ -142,8 +142,10 @@
             accepted = el.getAttribute('data-accepted-types');
 
         disableSubmit(el, true);
+        var ext = file.name.split('.').slice(-1)[0];
+        var type = file.type || MIME_LOOKUPS[ext];
 
-        if (!accepted || accepted.split(',').indexOf(file.type) !== -1) {
+        if (!accepted || accepted.split(',').indexOf(type) !== -1) {
             getSignedUrl(e);
             message(el, 'Uploading...');
         } else {

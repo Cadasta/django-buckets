@@ -85,13 +85,16 @@ DATABASES = {
     }
 }
 
-# DEFAULT_FILE_STORAGE = 'buckets.test.storage.FakeS3Storage'
-DEFAULT_FILE_STORAGE = 'buckets.storage.S3Storage'
+DEFAULT_FILE_STORAGE = 'buckets.test.storage.FakeS3Storage'
 AWS = {
     'BUCKET': os.environ.get('AWS_BUCKET'),
     'ACCESS_KEY': os.environ.get('AWS_ACCESS_KEY'),
     'SECRET_KEY': os.environ.get('AWS_SECRET_KEY'),
     'REGION': os.environ.get('AWS_REGION'),
+}
+
+MIME_LOOKUPS = {
+     'gpx': 'application/gpx+xml',
 }
 
 

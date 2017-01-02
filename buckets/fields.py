@@ -142,10 +142,9 @@ class S3FileField(models.Field):
     def pre_save(self, model_instance, add):
         file = getattr(model_instance, self.name)
         file.save()
-        if not add and file.original_url and not file.url:
+        if not add and file.original_url and file.original_url != file.url:
             key = key_from_url(file.original_url, self.upload_to)
             self.storage.delete(key)
-            return ''
 
         return file.url
 

@@ -188,6 +188,29 @@ def test_pre_save():
 
 
 @pytest.mark.django_db
+def test_pre_save_replace_file():
+    file = create_file()
+    with open(os.path.join(settings.MEDIA_ROOT,
+              's3/uploads/text.txt'), 'wb') as dest_file:
+        dest_file.write(open(file.name, 'rb').read())
+    with open(os.path.join(settings.MEDIA_ROOT,
+              's3/uploads/text2.txt'), 'wb') as dest_file:
+        dest_file.write(open(file.name, 'rb').read())
+
+    model_instance = FileModel(s3_file='/media/s3/uploads/text.txt')
+    model_instance.save()
+    model_instance.refresh_from_db()
+
+    field = model_instance.s3_file.field
+    field.storage = FakeS3Storage()
+    model_instance.s3_file = '/media/s3/uploads/text2.txt'
+    url = field.pre_save(model_instance, False)
+    assert url == '/media/s3/uploads/text2.txt'
+    assert not os.path.isfile(os.path.join(settings.MEDIA_ROOT,
+                              's3/uploads/text.txt'))
+
+
+@pytest.mark.django_db
 def test_pre_save_delete_file():
     file = create_file()
     with open(os.path.join(settings.MEDIA_ROOT,

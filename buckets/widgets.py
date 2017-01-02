@@ -1,12 +1,15 @@
+import json
 from os.path import basename
 from django.forms import widgets
 from django.utils.safestring import mark_safe
+from django.conf import settings
 
 
 class S3FileUploadWidget(widgets.TextInput):
     default_html = (
         '<div class="s3-buckets {uploaded_class}"'
         '     data-upload-to="{upload_to}" {accepted_types}>'
+        '   {mime_lookup}'
         '   <div class="file-links">'
         '       <a class="file-link" href="{file_url}">{file_name}</a>'
         '       <a class="file-remove" href="#">(Remove)</a>'
@@ -46,6 +49,11 @@ class S3FileUploadWidget(widgets.TextInput):
                 ','.join(self.accepted_types)
             )
 
+        mime_lookup = ''
+        if hasattr(settings, 'MIME_LOOKUPS'):
+            mime_lookup = ('<script>var MIME_LOOKUPS = ' +
+                           json.dumps(settings.MIME_LOOKUPS) + '</script>')
+
         output = self.html.format(
             name=name,
             file_url=file_url,
@@ -53,7 +61,8 @@ class S3FileUploadWidget(widgets.TextInput):
             file_name=basename(file_url) if file_url else '',
             uploaded_class=('uploaded' if file_url else ''),
             upload_to=self.upload_to,
-            accepted_types=accepted_types
+            accepted_types=accepted_types,
+            mime_lookup=mime_lookup
         )
 
         return mark_safe(output)
