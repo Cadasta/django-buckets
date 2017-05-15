@@ -90,9 +90,9 @@ def test_content_via_save(make_dirs):  # noqa
 
 
 def test_urls():
-    assert reverse('fake_s3_upload') == '/media/s3/uploads'
+    assert reverse('fake_s3_upload') == '/media/s3/uploads/'
 
-    resolved = resolve('/media/s3/uploads')
+    resolved = resolve('/media/s3/uploads/')
     assert resolved.func.__name__ == views.fake_s3_upload.__name__
 
 
