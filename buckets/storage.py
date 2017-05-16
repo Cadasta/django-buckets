@@ -73,7 +73,7 @@ class S3Storage(Storage):
         else:
             return True
 
-    def get_signed_url(self, key=None):
+    def get_signed_url(self, key):
         dir = ''
         if '/' in key:
             dir = key[:key.rfind('/') + 1]

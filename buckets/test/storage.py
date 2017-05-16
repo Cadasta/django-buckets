@@ -46,7 +46,7 @@ class FakeS3Storage(object):
         path = os.path.join(self.dir, 'uploads', key)
         return os.path.exists(path)
 
-    def get_signed_url(self, key=None):
+    def get_signed_url(self, key):
         dir = ''
         if '/' in key:
             dir = key[:key.rfind('/') + 1]
