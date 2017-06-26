@@ -129,7 +129,7 @@ and it accepts the same arguments.
   class MyModel(models.Model):
       name = models.CharField(max_length=200)
       file = S3FileField(upload_to='some-dir',
-                         accepted_types=['image/png', image/jpeg])
+                         accepted_types=['image/png', 'image/jpeg'])
 
 
 Instanciate the model
