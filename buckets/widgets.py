@@ -2,6 +2,7 @@ import json
 from os.path import basename
 from django.forms import widgets
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
 from django.conf import settings
 
 
@@ -12,13 +13,13 @@ class S3FileUploadWidget(widgets.TextInput):
         '   {mime_lookup}'
         '   <div class="file-links">'
         '       <a class="file-link" href="{file_url}">{file_name}</a>'
-        '       <a class="file-remove" href="#">(Remove)</a>'
+        '       <a class="file-remove" href="#">%s</a>'
         '   </div>'
         '   <input class="file-url" type="hidden" value="{file_url}"'
         '          id="{element_id}" name="{name}" />'
         '   <input class="file-input" type="file" />'
         '</div>'
-    )
+    ) % _("(Remove)")
 
     class Media:
         js = (
