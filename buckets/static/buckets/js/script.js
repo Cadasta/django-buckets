@@ -103,9 +103,16 @@
         })
         formData.append('file', file);
                 
-        request('POST', url, formData, headers, el, function(status, xml) {
+        request('POST', url, formData, headers, el, function(status, response) {
             if (status !== 204) {
-                error(el, 'Not able to upload file')
+                var errorMsg = 'Not able to upload file. ';
+                
+                var xml = new DOMParser().parseFromString(response, "text/xml");
+                if (xml.getElementsByTagName('Code')[0].innerHTML === 'EntityTooLarge') {
+                    errorMsg += 'File size exceeds maximum limit.'
+                }
+                    
+                error(el, errorMsg)
             } else {
                 var fileUrl = data.url + '/' + data.fields.key;
                 update(el, fileUrl);

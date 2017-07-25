@@ -1,7 +1,7 @@
 from django.db import models
 from buckets.fields import S3FileField
 
-TYPES = ['image/jpeg', 'application/gpx+xml']
+TYPES = ['image/jpeg', 'application/gpx+xml', 'text/plain']
 
 
 class FileModel(models.Model):
