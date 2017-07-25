@@ -8,6 +8,7 @@ from botocore.client import Config
 from botocore.exceptions import ClientError
 
 from .utils import validate_settings, random_id, ensure_dirs
+from .defaults import MAX_FILE_SIZE
 
 
 class S3Storage(Storage):
@@ -18,7 +19,7 @@ class S3Storage(Storage):
         self.secret_key = settings.AWS['SECRET_KEY']
         self.region = settings.AWS['REGION']
         self.bucket_name = settings.AWS['BUCKET']
-        self.max_size = settings.AWS.get('MAX_FILE_SIZE', 1048579)
+        self.max_size = settings.AWS.get('MAX_FILE_SIZE', MAX_FILE_SIZE)
 
         ensure_dirs('downloads')
 
