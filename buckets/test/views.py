@@ -16,7 +16,9 @@ def fake_s3_upload(request):
 
     max_file_size = settings.AWS.get('MAX_FILE_SIZE')
     if max_file_size and file.size > max_file_size:
-        return HttpResponse(EXCEED_MAX_SIZE, status=400)
+        msg = EXCEED_MAX_SIZE.format(max_size=max_file_size,
+                                     proposed_size=file.size)
+        return HttpResponse(msg, status=400)
 
     default_storage.save(key, file.read())
     return HttpResponse('', status=204)

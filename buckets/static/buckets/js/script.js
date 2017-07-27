@@ -2,6 +2,11 @@
     var link_update = document.createEvent('Event');
     link_update.initEvent('link:update', true, true);
 
+    function toMB(bytes) {
+        // Convert bytes to MB and round to two decimals.
+        return Math.round(bytes / (1024*1024) * 100) / 100;
+    }
+
     function getParentByTagName(el, tagName) {
         var p = el.parentElement;
 
@@ -109,7 +114,9 @@
                 
                 var xml = new DOMParser().parseFromString(response, "text/xml");
                 if (xml.getElementsByTagName('Code')[0].innerHTML === 'EntityTooLarge') {
-                    errorMsg += 'File size exceeds maximum limit.'
+                    var limit = parseInt(xml.getElementsByTagName('MaxSizeAllowed')[0].innerHTML);
+
+                    errorMsg += 'The size of the file exceeds the maximum allowed size of ' + toMB(limit) + 'MB.';
                 }
                     
                 error(el, errorMsg)

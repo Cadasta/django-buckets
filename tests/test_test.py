@@ -157,6 +157,8 @@ def test_post_large_file(make_dirs, monkeypatch, settings):  # noqa
     setattr(request, 'POST', {'key': 'subdir/text.txt'})
     response = views.fake_s3_upload(request)
     assert response.status_code == 400
-    assert response.content.decode('utf-8') == errors.EXCEED_MAX_SIZE
+    assert response.content.decode('utf-8') == errors.EXCEED_MAX_SIZE.format(
+        max_size=settings.AWS['MAX_FILE_SIZE'],
+        proposed_size=settings.AWS['MAX_FILE_SIZE'] + 1)
     assert not os.path.isfile(
         os.path.join(settings.MEDIA_ROOT, 's3/uploads/subdir', 'text.txt'))
