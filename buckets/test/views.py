@@ -4,7 +4,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse
 
-from ..defaults import MAX_FILE_SIZE
 from .errors import EXCEED_MAX_SIZE
 
 
@@ -15,7 +14,8 @@ def fake_s3_upload(request):
 
     file = request.FILES.get('file')
 
-    if file.size > settings.AWS.get('MAX_FILE_SIZE', MAX_FILE_SIZE):
+    max_file_size = settings.AWS.get('MAX_FILE_SIZE')
+    if max_file_size and file.size > max_file_size:
         return HttpResponse(EXCEED_MAX_SIZE, status=400)
 
     default_storage.save(key, file.read())

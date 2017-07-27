@@ -7,7 +7,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from buckets.test.mocks import create_file, make_dirs  # noqa
 from buckets.test.storage import FakeS3Storage
 from buckets.test import views, errors
-from buckets.defaults import MAX_FILE_SIZE
 
 
 #############################################################################
@@ -145,12 +144,12 @@ def test_post_upload_file_to_subdir(make_dirs, monkeypatch):  # noqa
         os.path.join(settings.MEDIA_ROOT, 's3/uploads/subdir', 'text.txt'))
 
 
-def test_post_large_file(make_dirs, monkeypatch):  # noqa
+def test_post_large_file(make_dirs, monkeypatch, settings):  # noqa
     monkeypatch.setattr(views, 'default_storage', FakeS3Storage())
     file = create_file()
 
     upload = SimpleUploadedFile('text.txt', open(file.name, 'rb').read())
-    upload.size = MAX_FILE_SIZE + 1
+    upload.size = settings.AWS['MAX_FILE_SIZE'] + 1
 
     request = HttpRequest()
     setattr(request, 'method', 'POST')

@@ -114,7 +114,7 @@ Other optional settings can be added to the :code:`AWS` settings dictionary.
 =====================  ===========  ========================================================================
 Name                   Type         Description
 =====================  ===========  ========================================================================
-:code:`MAX_FILE_SIZE`  :code:`int`  The maximum allowed size for file uploads in bytes. Defaults to 1048579.
+:code:`MAX_FILE_SIZE`  :code:`int`  The maximum allowed size for file uploads in bytes. If :code:`MAX_FILE_SIZE` is not defined then there will be no limit to the size of file.
 =====================  ===========  ========================================================================
 
 Usage
