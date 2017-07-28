@@ -41,6 +41,7 @@ def pytest_configure():
             'ACCESS_KEY': os.environ.get('AWS_ACCESS_KEY'),
             'SECRET_KEY': os.environ.get('AWS_SECRET_KEY'),
             'REGION': os.environ.get('AWS_REGION'),
+            'MAX_FILE_SIZE': 1048579,
         },
         ROOT_URLCONF='buckets.test.urls',
         MEDIA_ROOT=os.path.join(os.path.dirname(BASE_DIR), 'files'),

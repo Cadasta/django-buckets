@@ -60,4 +60,4 @@ class FakeS3Storage(object):
             if not self.exists(temp_key):
                 s3_key = temp_key
 
-        return {'url': '/media/s3/uploads', 'fields': {'key': s3_key}}
+        return {'url': '/media/s3/uploads/', 'fields': {'key': s3_key}}

@@ -91,6 +91,7 @@ AWS = {
     'ACCESS_KEY': os.environ.get('AWS_ACCESS_KEY'),
     'SECRET_KEY': os.environ.get('AWS_SECRET_KEY'),
     'REGION': os.environ.get('AWS_REGION'),
+    'MAX_FILE_SIZE': 1048576,
 }
 
 MIME_LOOKUPS = {

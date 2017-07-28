@@ -18,6 +18,7 @@ class S3Storage(Storage):
         self.secret_key = settings.AWS['SECRET_KEY']
         self.region = settings.AWS['REGION']
         self.bucket_name = settings.AWS['BUCKET']
+        self.max_size = settings.AWS.get('MAX_FILE_SIZE')
 
         ensure_dirs('downloads')
 
@@ -87,9 +88,14 @@ class S3Storage(Storage):
             if not self.exists(temp_key):
                 s3_key = temp_key
 
+        condtions = []
+        if self.max_size:
+            condtions.append(["content-length-range", 0, self.max_size])
+
         params = {
             'Bucket': self.bucket_name,
-            'Key': s3_key
+            'Key': s3_key,
+            'Conditions': condtions
         }
         client = boto3.client(
             's3',
