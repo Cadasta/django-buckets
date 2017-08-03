@@ -62,7 +62,7 @@
         var link = el.querySelector('.file-link'),
             url = el.querySelector('.file-url');
 
-        if (errs = el.querySelector('.errors')) { errs.remove(); }
+        clearErrors(el);
 
         url.value = fileUrl;
         link.href = fileUrl;
