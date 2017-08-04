@@ -38,12 +38,16 @@
         }
     }
 
+    function clearErrors(el) {
+        if (errs = el.querySelector('.errors')) { errs.remove(); }
+    }
+
     function error(el, msg) {
         message(el);
         el.querySelector('.file-url').value = '';
         el.querySelector('.file-input').value = '';
 
-        if (errs = el.querySelector('.errors')) { errs.remove(); }
+        clearErrors(el);
 
         var errorList = document.createElement('ul');
         errorList.setAttribute('class', 'errors');
@@ -58,7 +62,7 @@
         var link = el.querySelector('.file-link'),
             url = el.querySelector('.file-url');
 
-        if (errs = el.querySelector('.errors')) { errs.remove(); }
+        clearErrors(el);
 
         url.value = fileUrl;
         link.href = fileUrl;
@@ -154,6 +158,8 @@
         var el = e.target.parentElement,
             file = el.querySelector('.file-input').files[0],
             accepted = el.getAttribute('data-accepted-types');
+
+        clearErrors(el);
 
         disableSubmit(el, true);
         var ext = file.name.split('.').slice(-1)[0];
