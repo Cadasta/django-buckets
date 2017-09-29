@@ -16,10 +16,10 @@ class FakeS3Storage(object):
         uploaded = os.path.join(self.dir, 'uploads', url)
 
         with open(os.path.join(self.dir, 'downloads', name), 'wb') as dest:
-            dest.write(open(uploaded, 'rb').read())
-            dest.close()
+            with open(uploaded, 'rb') as source:
+                dest.write(source.read())
 
-        return dest.name
+            return dest.name
 
     def save(self, name, content):
         url = '/media/s3/uploads/' + name
