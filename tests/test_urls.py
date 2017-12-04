@@ -1,4 +1,7 @@
-from django.core.urlresolvers import reverse, resolve
+try:
+    from django.core.urlresolvers import reverse, resolve
+except ImportError:
+    from django.urls import reverse, resolve
 from buckets.views import signed_url
 
 
