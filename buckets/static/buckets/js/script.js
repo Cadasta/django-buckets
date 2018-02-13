@@ -56,6 +56,7 @@
         errorList.appendChild(errorMessage);
 
         el.insertBefore(errorList, el.firstChild);
+        disableSubmit(el, false);
     }
 
     function update(el, fileUrl) {
