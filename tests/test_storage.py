@@ -23,7 +23,7 @@ def test_get_signed_url():
     storage = S3Storage()
 
     signed = storage.get_signed_url(key='file.txt')
-    assert ('https://{}.s3.amazonaws.com/'.format(bucket_name)==
+    assert ('https://{}.s3.amazonaws.com/'.format(bucket_name) ==
             signed['url'])
     assert len(signed['fields']['key']) == 28
 
