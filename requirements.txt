@@ -1,11 +1,11 @@
 # Minimum Django version
 Django>=1.11,<2.0 # rq.filter: <2.0
-boto3==1.5.23
+boto3==1.6.15
 
 # Test requirements
 tox==2.9.1
 pytest-django==3.1.2
-pytest==3.4.0
+pytest==3.5.0
 pytest-cov==2.5.1
 flake8==3.5.0
 factory-boy==2.10.0
