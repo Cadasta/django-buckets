@@ -126,7 +126,7 @@
                     
                 error(el, errorMsg)
             } else {
-                var fileUrl = data.url + '/' + data.fields.key;
+                var fileUrl = data.url + data.fields.key;
                 update(el, fileUrl);
             }
         });
