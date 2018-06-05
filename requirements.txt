@@ -5,7 +5,7 @@ boto3==1.7.32
 # Test requirements
 tox==3.0.0
 pytest-django==3.2.1
-pytest==3.6.0
+pytest==3.6.1
 pytest-cov==2.5.1
 flake8==3.5.0
 factory-boy==2.11.1
