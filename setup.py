@@ -80,7 +80,7 @@ setup(
     package_data=get_package_data(package),
     include_package_data=True,
     install_requires=[
-        'boto3==1.9.4'
+        'boto3==1.9.5'
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
