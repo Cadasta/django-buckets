@@ -7,6 +7,6 @@ tox==3.7.0
 pytest-django==3.4.5
 pytest==4.2.0
 pytest-cov==2.6.1
-flake8==3.7.2
+flake8==3.7.3
 factory-boy==2.11.1
 djangorestframework==3.9.1
